@@ -97,21 +97,22 @@ Deberán ir relatando los eventos de la jugada. En este caso el video puede esta
 # en el caso de que las "cartas" con las que jugar esten predefinidas con 4 pares (etapa 4)
 """lista_cartas=["A","A","B","B","C","C","D","D"]"""
 
-
+import random
 
 lista_cartas = ["a","a","b","b","c","c","d","d","e","e","f","f","g","g","h","h"]
 LISTA_VACIA = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 lista_juego = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
-#para mezclar las "cartas" y se encuentren en diferentes posiciones en c/partida (se mantienen los caracteres) (etapa 4)
+
 def mezclar_cartas (lista_original):
+    '''para mezclar las "cartas" y se encuentren en diferentes posiciones en c/partida (se mantienen los caracteres) (etapa 4)'''
     lista_mezclada = lista_original
-    import random
     random.shuffle(lista_mezclada)
     return lista_mezclada
 
-#para filtrar los valores que deben ingresar en el juego (etapa 2) (me da error en el filatrado de numeros "numero.isnumeric")
+
 def validar_ingreso(numero):
+    '''para filtrar los valores que deben ingresar en el juego (etapa 2) (me da error en el filatrado de numeros "numero.isnumeric")'''
     if numero.isdigit():
         if 0<int(numero)<len(lista_cartas)+1:
             devolver=True
@@ -121,9 +122,8 @@ def validar_ingreso(numero):
         devolver=False
     return devolver
 
-#juego base
 def juego(lista_juego, lista_cartas):
-    
+    '''juego base'''
     lista_cartas= mezclar_cartas(lista_cartas)
     contador_intentos=0
         
