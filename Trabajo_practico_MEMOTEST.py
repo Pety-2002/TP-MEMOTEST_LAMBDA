@@ -25,8 +25,7 @@ En esta etapa el objetivo es programar una pequeña parte del juego. Vamos a sim
  Fichas y Posiciones: [1] [2] [3] [4]
  1er. Posición: _
 En esta etapa, no debemos preocuparnos por validar el ingreso de los valores.
-● A continuación, debemos mostrar que letra hay en la posición ingresada, y
-solicitar el ingreso de la siguiente posición en la que supone estará la letra
+● A continuación, debemos mostrar que letra hay en la posición ingresada, y solicitar el ingreso de la siguiente posición en la que supone estará la letra
 gemela. Por ejemplo si el jugador había ingresado como 1er. Posición, 2; entonces veríamos algo parecido a lo siguiente:
  Fichas y Posiciones: [1] D [3] [4]
  2da. Posición: _
@@ -59,7 +58,7 @@ En esta etapa debemos aumentar la cantidad de fichas intervinientes. Sumaremos a
 Etapa 4 - Aleatoriedad y tiempos
 
 Hasta aquí ya hemos logrado que nuestro juego se parezca bastante al real, por ello le daremos unos toques finales, sumando los siguientes requerimientos:
-● Es hora de agregar aleatoriedad a las ubicaciones de las fichas. En cada ejecución del juego, debemos lograr que nuestras fichas sean asignadas adistintas posiciones.
+● Es hora de agregar aleatoriedad a las ubicaciones de las fichas. En cada ejecución del juego, debemos lograr que nuestras fichas sean asignadas a distintas posiciones.
 ● También, debemos informar el tiempo que ha tomado la partida.
 ● Por último, es hora de ampliar la cantidad de fichas a 16, mostrando 4 por línea
 """
@@ -67,13 +66,26 @@ Hasta aquí ya hemos logrado que nuestro juego se parezca bastante al real, por 
 Etapa 5 - Extensión a Dos participantes
 
 En el juego de mesa, los participantes pueden ser 2 ó más. Lo que cambia respecto de lo que hemos hecho, es lo siguiente:
-● Comienza un participante dando vuelta primero una ficha y luego otra tratando que sean iguales, si lo consigue toma las dos fichas para sí.
-● Si las figuras son distintas las vuelve a dar vuelta en la misma posición que se encontraban y entonces dar lugar al otro participante a que haga lo mismo; y así sucesivamente.
-● El juego finaliza cuando no quedan más fichas y se declara ganador al jugador con mayor cantidad de fichas iguales. En caso de empate, ganará el jugador que tuvo menor cantidad de intentos.
+
+● Comienza un participante dando vuelta primero una ficha y luego otra tratando que sean iguales,
+si lo consigue toma las dos fichas para sí.
+
+● Si las figuras son distintas las vuelve a dar vuelta en la misma posición que se encontraban y entonces 
+dar lugar al otro participante a que haga lo mismo; y así sucesivamente.
+
+● El juego finaliza cuando no quedan más fichas y se declara ganador al jugador con mayor cantidad de fichas iguales. 
+En caso de empate, ganará el jugador que tuvo menor cantidad de intentos.
+
 Entonces, en esta etapa debemos dar la posibilidad a que el juego sea entre dos participantes. Para ello, debemos:
-● Solicitar los nombres de los dos jugadores al inicio de la partida. La solicitud de los nombres se debe hacer mediante una interfaz gráfica.
-● Elegir de forma aleatoria, el jugador que jugará primero; y antes del comienzo del juego informar el orden. Cada vez que un jugador recibe su turno, se debe indicar claramente “Turno de: (Nombre del Jugador)”.
-● Adaptar nuestra aplicación para que la lógica siga con esta nueva dinámica de juego. O sea, cuando un jugador no acierta la posición de la segunda ficha, le tocará el turno de elección de la posición de la primera ficha, al siguiente jugador.
+
+● Solicitar los nombres de los dos jugadores al inicio de la partida. 
+La solicitud de los nombres se debe hacer mediante una interfaz gráfica.
+
+● Elegir de forma aleatoria, el jugador que jugará primero; y antes del comienzo del juego informar el orden.
+ Cada vez que un jugador recibe su turno, se debe indicar claramente “Turno de: (Nombre del Jugador)”.
+
+● Adaptar nuestra aplicación para que la lógica siga con esta nueva dinámica de juego. O sea, cuando un jugador no acierta 
+la posición de la segunda ficha, le tocará el turno de elección de la posición de la primera ficha al siguiente jugador.
 """
 """
 Condiciones de Entrega
@@ -104,63 +116,75 @@ LISTA_VACIA = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 lista_juego = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
 
-def mezclar_cartas (lista_original):
-    '''para mezclar las "cartas" y se encuentren en diferentes posiciones en c/partida (se mantienen los caracteres) (etapa 4)'''
+def mezclar_cartas(lista_original):
+    '''
+    para mezclar las "cartas" y se encuentren en diferentes posiciones en c/partida (se mantienen los caracteres) (etapa 4)
+    Creada por: ...
+    '''
     lista_mezclada = lista_original
     random.shuffle(lista_mezclada)
     return lista_mezclada
 
-
 def validar_ingreso(numero):
-    '''para filtrar los valores que deben ingresar en el juego (etapa 2) (me da error en el filatrado de numeros "numero.isnumeric")'''
-    if numero.isdigit():
-        if 0<int(numero)<len(lista_cartas)+1:
-            devolver=True
-        else:
-            devolver=False
-    else:
-        devolver=False
-    return devolver
+    '''
+    Filtrar los valores que deben ingresar en el juego (etapa 2).
+    Si el participante ingresa:
+    ● un valor que no corresponda a una posición
+    ● o el mismo no se encuentre disponible,
+    ● o no se trata de un valor numérico,
+    se le debe mostrar un mensaje acorde y solicitar el ingreso de un nuevo valor. 
+    Creada por: (algun otro), JuanP
+    '''
+    while not numero.isdigit() or int(numero)<=0 or int(numero)>len(lista_cartas):
+        numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada en el tablero: ")
+    return int(numero)
 
+def imprimir_tablero(lista_juego):
+    '''
+    Imprimo el tablero
+    Creada por: JuanP
+    '''
+    #me ahorro todo esto -> print(lista_juego[:4], "\n", lista_juego[4:8], "\n", lista_juego[8:12], "\n", lista_juego[12:16], sep = "")
+    for contador in range(0,len(lista_juego),4):
+        print(lista_juego[contador:4+contador])
+    return
+    
 def juego(lista_juego, lista_cartas):
-    '''juego base'''
+    '''
+    juego base
+    Creada por: ...
+    '''
     lista_cartas= mezclar_cartas(lista_cartas)
     contador_intentos=0
         
     while lista_juego != lista_cartas:
         #comienzo del juego
-        print(lista_juego[:4], "\n", lista_juego[4:8], "\n", lista_juego[8:12], "\n", lista_juego[12:16], sep = "")
-        primera_posicion= input("Seleccione una posición: ")
-        while validar_ingreso(primera_posicion) == False:
-            print("Seleccione un numero del 1 al",len(lista_cartas))
-            primera_posicion= input("Seleccione una posición: ")
-        primera_posicion = int(primera_posicion)
+        imprimir_tablero(lista_juego)
+        primera_posicion= input("Seleccione una posición: ")  
+        primera_posicion = validar_ingreso(primera_posicion)
         lista_juego[primera_posicion-1] = lista_cartas[primera_posicion-1]
-        print(lista_juego[:4], "\n", lista_juego[4:8], "\n", lista_juego[8:12], "\n", lista_juego[12:16], sep = "")
-        #1er opcion
+        imprimir_tablero(lista_juego)
         
         segunda_posicion= input("Seleccione una segunda posición: ")
-        while validar_ingreso(segunda_posicion) == False:
-            print("Seleccione un numero del 1 al",len(lista_cartas))
-            segunda_posicion= input("Seleccione una posición: ")
-        segunda_posicion = int(segunda_posicion)
+        segunda_posicion = validar_ingreso(segunda_posicion)
         lista_juego[segunda_posicion-1] = lista_cartas[segunda_posicion-1]
-        print(lista_juego[:4], "\n", lista_juego[4:8], "\n", lista_juego[8:12], "\n", lista_juego[12:16], sep = "")
-        #2da opcion
+        imprimir_tablero(lista_juego)
         
+        #Si las fichas son distintas:
         if lista_juego[primera_posicion-1] != lista_juego[segunda_posicion-1]:
             lista_juego[primera_posicion-1] = LISTA_VACIA[primera_posicion-1]
             lista_juego[segunda_posicion-1] = LISTA_VACIA[segunda_posicion-1]
-        #condicion de que ambas opciones sean iguales
-        
+            
+        print("")
         contador_intentos+=1
         #para contar la cantidad de intentos requeridos (etapa 3)
     return contador_intentos
 
 def main():
+    '''Creada por: ...'''
     seguir = "s"
     while seguir == "s":
-        print("usted gano en",juego(lista_juego, lista_cartas),"intentos")
+        print(f"Usted gano en {juego(lista_juego, lista_cartas)} intentos") #usar f print
         seguir= input("¿Seguir jugando?(s/n): ")
 
 main()
