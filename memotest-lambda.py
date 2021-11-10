@@ -1,5 +1,7 @@
 import random
 from tkinter import *
+import time
+import os
 
 lista_cartas = ["a","a","b","b","c","c","d","d","e","e","f","f","g","g","h","h"]
 LISTA_VACIA = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
@@ -44,6 +46,7 @@ def mezclar_jugadores():
     random.shuffle(lista)
     return var.set(f"Es el turno de {lista[0]}")
 
+
 raiz = Tk()
 raiz.title("Login Lambda")
 raiz.resizable(0,0)
@@ -84,8 +87,10 @@ def juego(lista_juego, lista_cartas):
     '''
     lista_cartas= mezclar_cartas(lista_cartas)
     contador_intentos=0
-        
+    tiempo_inicial = time.time()
+
     while lista_juego != lista_cartas:
+
         #comienzo del juego
         imprimir_tablero(lista_juego)
         primera_posicion= input("Seleccione una posición: ")  
@@ -102,18 +107,29 @@ def juego(lista_juego, lista_cartas):
         if lista_juego[primera_posicion-1] != lista_juego[segunda_posicion-1]:
             lista_juego[primera_posicion-1] = LISTA_VACIA[primera_posicion-1]
             lista_juego[segunda_posicion-1] = LISTA_VACIA[segunda_posicion-1]
-            
+        
+        #borra resultados anteriores
+        time.sleep(5)
+        os.system("cls")
+        
         print("")
         contador_intentos+=1
         
-        #para contar la cantidad de intentos requeridos (etapa 3)
-    return contador_intentos
+    tiempo_final = time.time()
+    tiempo_transcurrido = int(tiempo_final - tiempo_inicial)
+
+    # resultados[intentos, tiempo]
+    resultados = [contador_intentos, tiempo_transcurrido]
+
+    #para contar la cantidad de intentos requeridos (etapa 3)
+    return resultados
 
 def main():
     '''Creada por: ...'''
     seguir = "s"
     while seguir == "s":
-        print(f"Usted gano en {juego(lista_juego, lista_cartas)} intentos") #usar f print
+        resultados = juego(lista_juego, lista_cartas)
+        print(f"Usted gano en {resultados[0]} intentos y {resultados[1]} segundos") #usar f print
         seguir= input("¿Seguir jugando?(s/n): ")
 
 main()
