@@ -1,6 +1,7 @@
 import random
 from tkinter import *
 import time
+import os
 
 lista_cartas = ["a","a","b","b","c","c","d","d","e","e","f","f","g","g","h","h"]
 LISTA_VACIA = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
@@ -106,7 +107,11 @@ def juego(lista_juego, lista_cartas):
         if lista_juego[primera_posicion-1] != lista_juego[segunda_posicion-1]:
             lista_juego[primera_posicion-1] = LISTA_VACIA[primera_posicion-1]
             lista_juego[segunda_posicion-1] = LISTA_VACIA[segunda_posicion-1]
-            
+        
+        #borra resultados anteriores
+        time.sleep(5)
+        os.system("cls")
+        
         print("")
         contador_intentos+=1
         
