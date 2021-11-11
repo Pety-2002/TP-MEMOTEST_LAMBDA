@@ -11,7 +11,7 @@ lista_juego = [1, 2, 3, 4, 5, 6, 7, 8]
 
 def mezclar_cartas(lista_original):
     '''
-    para mezclar las "cartas" y se encuentren en diferentes posiciones en c/partida (se mantienen los caracteres) (etapa 4)
+    Cambia posicion de valores por partidas (etapa 4)
     Creada por: ...
     '''
     lista_mezclada = lista_original
@@ -29,7 +29,7 @@ def validar_ingreso(numero):
 
 def imprimir_tablero(lista_juego):
     '''
-    Imprimo el tablero
+    Imprime el tablero
     Creada por: JuanP
     '''
     #me ahorro todo esto -> print(lista_juego[:4], "\n", lista_juego[4:8], "\n", lista_juego[8:12], "\n", lista_juego[12:16], sep = "")
@@ -38,11 +38,15 @@ def imprimir_tablero(lista_juego):
     return
 
 def mezclar_jugadores():
+    '''
+    Elige a los jugadores de forma aleatorea
+
+    '''
     lista = [cuadro_nombre1.get(), cuadro_nombre2.get()]
     random.shuffle(lista)
     return var.set(f"Es el turno de {lista[0]}")
 
-
+#Colocar la interfaz dentro de una funcion
 raiz = Tk()
 raiz.title("Login Lambda")
 raiz.resizable(0,0)
@@ -78,7 +82,8 @@ raiz.mainloop()
     
 def juego(lista_juego, lista_cartas):
     '''
-    juego base
+    Ingreso de las posiciones y verificar que los valores sean iguales
+
     Creada por: ...
     '''
     #lista_cartas= mezclar_cartas(lista_cartas)
@@ -98,27 +103,20 @@ def juego(lista_juego, lista_cartas):
     lista_juego[segunda_posicion-1] = lista_cartas[segunda_posicion-1]
     imprimir_tablero(lista_juego)
         
-        #Si las fichas son distintas:
     if lista_juego[primera_posicion-1] != lista_juego[segunda_posicion-1]:
         
         lista_juego[primera_posicion-1] = LISTA_VACIA[primera_posicion-1]
         lista_juego[segunda_posicion-1] = LISTA_VACIA[segunda_posicion-1]
         fichas_distintas=True
-        
-        #borra resultados anteriores
+
     time.sleep(5)
     os.system("cls")
         
-    print("")
     contador_intentos+=1
         
     tiempo_final = time.time()
     tiempo_transcurrido = int(tiempo_final - tiempo_inicial)
-
-    # resultados[intentos, tiempo]
     resultados = [contador_intentos, tiempo_transcurrido, fichas_distintas]
-
-    #para contar la cantidad de intentos requeridos (etapa 3)
     return resultados
 
 def cambio_jugador(jugador1, jugador2):
@@ -157,13 +155,17 @@ def cambio_jugador(jugador1, jugador2):
     return ganador
 
 def main():
-    '''Creada por: ...'''
+
+    '''
+    Inicio del juego
+    Creada por: ...
+    '''
     seguir = "s"
     while seguir == "s":
         nombre_jugador_1=input("Ingrese su nombre ")
         nombre_jugador_2=input("Ingrese su nombre ")
         resultados = cambio_jugador(nombre_jugador_1, nombre_jugador_2)
-        print(resultados) #usar f print
+        print(resultados) 
         seguir= input("¿Seguir jugando?(s/n): ")
 
 main()
