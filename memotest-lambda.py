@@ -3,9 +3,10 @@ from tkinter import *
 import time
 import os
 
-lista_cartas = ["a","a","b","b","c","c","d","d","e","e","f","f","g","g","h","h"]
-LISTA_VACIA = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-lista_juego = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+lista_cartas = ["a","a","b","b","c","c","d","d"]
+LISTA_VACIA = [1, 2, 3, 4, 5, 6, 7, 8]
+lista_juego = [1, 2, 3, 4, 5, 6, 7, 8]
+
 
 
 def mezclar_cartas(lista_original):
@@ -20,12 +21,7 @@ def mezclar_cartas(lista_original):
 def validar_ingreso(numero):
     '''
     Filtrar los valores que deben ingresar en el juego (etapa 2).
-    Si el participante ingresa:
-    ● un valor que no corresponda a una posición
-    ● o el mismo no se encuentre disponible,
-    ● o no se trata de un valor numérico,
-    se le debe mostrar un mensaje acorde y solicitar el ingreso de un nuevo valor. 
-    Creada por: (algun otro), JuanP
+    Creada por: JuanP
     '''
     while not numero.isdigit() or int(numero)<=0 or int(numero)>len(lista_cartas):
         numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada en el tablero: ")
@@ -85,51 +81,89 @@ def juego(lista_juego, lista_cartas):
     juego base
     Creada por: ...
     '''
-    lista_cartas= mezclar_cartas(lista_cartas)
+    #lista_cartas= mezclar_cartas(lista_cartas)
     contador_intentos=0
     tiempo_inicial = time.time()
+    fichas_distintas=False
 
-    while lista_juego != lista_cartas:
-
-        #comienzo del juego
-        imprimir_tablero(lista_juego)
-        primera_posicion= input("Seleccione una posición: ")  
-        primera_posicion = validar_ingreso(primera_posicion)
-        lista_juego[primera_posicion-1] = lista_cartas[primera_posicion-1]
-        imprimir_tablero(lista_juego)
+    #comienzo del juego
+    imprimir_tablero(lista_juego)
+    primera_posicion= input("Seleccione una posición: ")  
+    primera_posicion = validar_ingreso(primera_posicion)
+    lista_juego[primera_posicion-1] = lista_cartas[primera_posicion-1]
+    imprimir_tablero(lista_juego)
         
-        segunda_posicion= input("Seleccione una segunda posición: ")
-        segunda_posicion = validar_ingreso(segunda_posicion)
-        lista_juego[segunda_posicion-1] = lista_cartas[segunda_posicion-1]
-        imprimir_tablero(lista_juego)
+    segunda_posicion= input("Seleccione una segunda posición: ")
+    segunda_posicion = validar_ingreso(segunda_posicion)
+    lista_juego[segunda_posicion-1] = lista_cartas[segunda_posicion-1]
+    imprimir_tablero(lista_juego)
         
         #Si las fichas son distintas:
-        if lista_juego[primera_posicion-1] != lista_juego[segunda_posicion-1]:
-            lista_juego[primera_posicion-1] = LISTA_VACIA[primera_posicion-1]
-            lista_juego[segunda_posicion-1] = LISTA_VACIA[segunda_posicion-1]
+    if lista_juego[primera_posicion-1] != lista_juego[segunda_posicion-1]:
+        
+        lista_juego[primera_posicion-1] = LISTA_VACIA[primera_posicion-1]
+        lista_juego[segunda_posicion-1] = LISTA_VACIA[segunda_posicion-1]
+        fichas_distintas=True
         
         #borra resultados anteriores
-        time.sleep(5)
-        os.system("cls")
+    time.sleep(5)
+    os.system("cls")
         
-        print("")
-        contador_intentos+=1
+    print("")
+    contador_intentos+=1
         
     tiempo_final = time.time()
     tiempo_transcurrido = int(tiempo_final - tiempo_inicial)
 
     # resultados[intentos, tiempo]
-    resultados = [contador_intentos, tiempo_transcurrido]
+    resultados = [contador_intentos, tiempo_transcurrido, fichas_distintas]
 
     #para contar la cantidad de intentos requeridos (etapa 3)
     return resultados
+
+def cambio_jugador(jugador1, jugador2):
+    #Esta funcion cambia el turno del jugador-Yenny/Eva Agregar al final el random
+    turno_jugador_1=True
+    PUNTOS=0
+    TIEMPO=1
+    FICHAS_DIF=2
+    
+    while lista_cartas!=lista_juego:
+        flag=True
+
+        while turno_jugador_1 and flag:
+            resultados_jugador_1=[0,0,0]
+            print("Turno de ", jugador1)
+            resultados_jugador_1=juego(lista_juego, lista_cartas)
+            if resultados_jugador_1[FICHAS_DIF]==True:
+                turno_jugador_1=False  
+            if lista_cartas==lista_juego:
+                flag=False 
+        
+        while turno_jugador_1==False and flag:
+            resultados_jugador_2=[0,0,0]
+            print("Turno de ", jugador2)
+            resultados_jugador_2=juego(lista_juego, lista_cartas)
+            if resultados_jugador_2[2]==True:
+                turno_jugador_1=True
+            if lista_cartas==lista_juego:
+                flag=False
+    
+    if resultados_jugador_1[PUNTOS]>resultados_jugador_2[PUNTOS]:
+        ganador=(f"El ganador fue {jugador1}, con {resultados_jugador_1[PUNTOS]} puntos ")
+    else:
+        ganador=(f"El ganador fue {jugador2}, con {resultados_jugador_2[PUNTOS]} puntos ")
+
+    return ganador
 
 def main():
     '''Creada por: ...'''
     seguir = "s"
     while seguir == "s":
-        resultados = juego(lista_juego, lista_cartas)
-        print(f"Usted gano en {resultados[0]} intentos y {resultados[1]} segundos") #usar f print
+        nombre_jugador_1=input("Ingrese su nombre ")
+        nombre_jugador_2=input("Ingrese su nombre ")
+        resultados = cambio_jugador(nombre_jugador_1, nombre_jugador_2)
+        print(resultados) #usar f print
         seguir= input("¿Seguir jugando?(s/n): ")
 
 main()
