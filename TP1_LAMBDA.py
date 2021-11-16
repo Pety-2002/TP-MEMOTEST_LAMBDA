@@ -4,10 +4,8 @@ import time
 import os
 
 
-lista_cartas = ["A","A","B","B"]
 cartas = ['A','B','C','D','E','F','G','H']
 LISTA_VACIA = [[1],[2],[3],[4]]
-lista_juego = [[1],[2],[3],[4]]
 #lista_cartas = ["A","A","B","B","C","C","D","D","E","E","F","F","G","G","H","H"]
 #LISTA_VACIA = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
 #lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
@@ -49,7 +47,7 @@ def nombres_jugadores():
     raiz.title("Login Lambda")
     raiz.resizable(0,0)
     raiz.config(bg="black")
-    mi_frame=Frame(raiz,width=300, height=130)
+    mi_frame=Frame(raiz,width=300, height=200)
     mi_frame.pack()
     mi_frame.config(bg="red")
 
@@ -58,6 +56,9 @@ def nombres_jugadores():
 
     nombre_usuario2=Label(mi_frame, text="Nombre Usuario 2: ")
     nombre_usuario2.grid(row=1, column=0, padx = 10, pady =10)
+
+    finalizar=Label(mi_frame, text="Al finalizar, presione \n 'Finalizar Envio'")
+    finalizar.grid(row=2, column=1, padx = 10, pady =10)
 
     cuadro_nombre1=Entry(mi_frame)
     cuadro_nombre1.grid(row=0,column=1,padx = 10, pady =10)
@@ -71,11 +72,16 @@ def nombres_jugadores():
     Dicc_show.grid(row=2, column=0, padx = 10, pady =10)
     Dicc_show.config(bg = "red", fg = "white")
 
-    boton=Button(raiz,text="Enviar", command =lambda: datos_jugadores([cuadro_nombre1.get(), cuadro_nombre2.get()]))
-    boton.pack()
+    lista = []
+
+    boton_enviar=Button(raiz,text="Enviar", command =lambda: [lista.append(cuadro_nombre1.get()), lista.append(cuadro_nombre2.get())])
+    boton_enviar.pack()
+
+    boton_salir=Button(raiz,text="Finalizar envio", command = raiz.destroy)
+    boton_salir.pack()
 
     raiz.mainloop()
-    return
+    return lista
 
 def datos_jugadores(lista_nombres_ingresados):
     '''
@@ -86,10 +92,8 @@ def datos_jugadores(lista_nombres_ingresados):
     lista_nombres_ingresados = mezclar(lista_nombres_ingresados)
     for jugador in lista_nombres_ingresados:
         diccionario[jugador] = [0,0]
-    
-    resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,(diccionario,lista_nombres_ingresados))
-    ganador(resultados)
-    return
+
+    return  diccionario
    
 
 def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,datos_jugadores):
@@ -100,7 +104,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,datos_jugadore
     CANT_PUNTOS=0
     CANT_INTENTOS=1 
 
-    #lista_cartas= mezclar(lista_cartas)
+    lista_cartas= mezclar(lista_cartas)
     jugadores = datos_jugadores
     diccionario = jugadores[0]
     lista_participantes = jugadores[1]
@@ -112,7 +116,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,datos_jugadore
     while lista_juego != lista_cartas:
         print(f"Turno de :{lista_participantes[jugador]}")
         imprimir_tablero(lista_juego)
-        primera_posicion= input("Seleccione una posición: ")  
+        primera_posicion = input("Seleccione una posición: ")  
         primera_posicion = validar_ingreso(primera_posicion,lista_cartas,lista_juego)
         lista_juego[primera_posicion-1] = lista_cartas[primera_posicion-1]
         imprimir_tablero(lista_juego)
@@ -168,17 +172,26 @@ def ganador(resultados):
         print(f"El ganador de la partida es {resultados[0][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{resultados[0][TUPLA_DATOS][INTENTOS]}.")
     else:
         print(f"El ganador de la partida es {resultados[0][NOMBRE]}, con {numero_max} puntos totales.")
-    return
+    return 
 
 def main():
     '''Creada por: ...'''
     seguir = "s"
+    lista = nombres_jugadores()
+    diccionario = datos_jugadores(lista)
     while seguir == "s":
-        nombres_jugadores()
+
+        lista_juego = [[1],[2],[3],[4]]
+        lista_cartas = ["A","A","B","B"]
+        resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,(diccionario,lista))
+        ganador(resultados)
         seguir= input("¿Seguir jugando?(s/n): ")
     return  
+
+
 tiempo_inicial = time.time()
 
 main()
+
 tiempo_partida = time.time() - tiempo_inicial
 print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
