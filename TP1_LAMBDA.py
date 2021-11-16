@@ -1,7 +1,8 @@
 import random
-from time import time
-import os
 from tkinter import *
+import time
+import os
+
 
 lista_cartas = ["A","A","B","B","C","C","D","D"]
 cartas = ['A','B','C','D','E','F','G','H']
@@ -122,6 +123,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,datos_jugadore
         if lista_juego[primera_posicion-1] != lista_juego[segunda_posicion-1]:
             lista_juego[primera_posicion-1] = LISTA_VACIA[primera_posicion-1]
             lista_juego[segunda_posicion-1] = LISTA_VACIA[segunda_posicion-1]
+            print("Los cartas seleccionadas son distintas")
 
             if jugador == len(jugadores)-1: # Esta funcion es necesaria para que pueda repetir un jugador.
                 jugador = 0
@@ -131,6 +133,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,datos_jugadore
             #Si las fichas son iguales:
         elif lista_juego[primera_posicion-1] == lista_juego[segunda_posicion-1]:
             diccionario[lista_participantes[jugador]][CANT_PUNTOS] +=1
+        time.sleep(2.5)
         os.system("cls")
         diccionario[lista_participantes[jugador]][CANT_INTENTOS] +=1 
         contador_jugadas_totales += 1
@@ -165,7 +168,8 @@ def main():
         nombres_jugadores()
         seguir= input("¿Seguir jugando?(s/n): ")
 
-inicio = time()
+tiempo_inicial = time.time()
+
 main()
-tiempo_partida = time() - inicio
+tiempo_partida = time.time() - tiempo_inicial
 print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
