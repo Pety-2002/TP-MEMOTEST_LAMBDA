@@ -37,7 +37,7 @@ def imprimir_tablero(lista_juego):
         print(lista_juego[contador:4+contador])
     return
 
-def mezclar_jugadores():
+"""def mezclar_jugadores():
     '''
     Elige a los jugadores de forma aleatorea
 
@@ -77,7 +77,7 @@ boton=Button(raiz,text="Enviar", command = mezclar_jugadores)
 boton.pack()
 
 raiz.mainloop()
-
+"""
 
     
 def juego(lista_juego, lista_cartas):
