@@ -10,37 +10,36 @@ LISTA_VACIA = [[1],[2],[3],[4]]
 #LISTA_VACIA = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
 #lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
 
-''' Para mezclar las "cartas" y se encuentren en diferentes posiciones en c/partida (se mantienen los caracteres) (etapa 4)
-    Creada por: ...'''
+
 
 def mezclar(lista):
+    ''' Para mezclar las "cartas" y se encuentren en diferentes posiciones en c/partida (se mantienen los caracteres) (etapa 4)
+    Creada por: ...'''
     lista_mezclada = lista
     random.shuffle(lista_mezclada)
     return lista_mezclada
 
 
-''' Validar que el ingreso no sea una valor fuera de rango/no se encuentre disponible/no sea un numero
-    Creada por: Facundo Polech'''
 def validar_ingreso(numero,lista_cartas,lista_juego):
+    ''' Validar que el ingreso no sea una valor fuera de rango/no se encuentre disponible/no sea un numero
+    Creada por: Facundo Polech'''
     while not numero.isdigit() or int(numero)<=0 or int(numero)>len(lista_cartas) or lista_juego[int(numero)-1] == '[*]':
         numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada en el tablero: ")
     return int(numero)
 
 
-''' Imprimo el tablero.
-    Creada por: JuanP'''
-
 def imprimir_tablero(lista_juego):
+    ''' Imprimo el tablero.
+    Creada por: JuanP'''
     for contador in range(0,len(lista_juego),4):
         print(lista_juego[contador:4+contador])
     return
 
 
-""" Crea la interfaz para solicitar el nombre de los jugadores
+def nombres_jugadores():
+    """ Crea la interfaz para solicitar el nombre de los jugadores
     Creada por: Milton Fernandez
     NOTA: HACER QUE SE CREEN BLOQUES DE INGRESO DE NOMBRE POR CADA PARTICIPANTE"""
-
-def nombres_jugadores():
     raiz = Tk()
     lista = []
     raiz.title("Ingreso Usuarios")
@@ -82,10 +81,9 @@ def nombres_jugadores():
     return lista
 
 
-''' Crea el diccionario donde se registraran los datos de cada jugador
-    Creada por: Juan Pedro Demarco'''
-
 def datos_jugadores(lista_nombres_ingresados):
+    ''' Crea el diccionario donde se registraran los datos de cada jugador
+    Creada por: Juan Pedro Demarco'''
     diccionario = {}
     lista_nombres_ingresados = mezclar(lista_nombres_ingresados)
     for jugador in lista_nombres_ingresados:
@@ -94,10 +92,9 @@ def datos_jugadores(lista_nombres_ingresados):
     return  diccionario
    
 
-''' Determina si las cartas ingresadas son iguales o no, en caso positivo acredita un punto al jugador
-    Creada por: todos los integrantes.'''
-
 def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores):
+    ''' Determina si las cartas ingresadas son iguales o no, en caso positivo acredita un punto al jugador
+    Creada por: todos los integrantes.'''
     CANT_PUNTOS=0
     CANT_INTENTOS=1 
 
@@ -148,10 +145,9 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores):
     return diccionario 
 
 
-''' En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
-    Creada por: Juan Pedro.'''
-
 def ganador(resultados):
+    ''' En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
+    Creada por: Juan Pedro.'''
     NOMBRE=PUNTOS=0
     TUPLA_DATOS=INTENTOS=1
 
@@ -170,9 +166,10 @@ def ganador(resultados):
     return 
 
 
-'''Creada por: ...'''
+
 
 def main():
+    '''Creada por: ...'''
     seguir = "s"
     lista = nombres_jugadores()
     diccionario = datos_jugadores(lista)
