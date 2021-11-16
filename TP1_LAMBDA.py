@@ -4,13 +4,13 @@ import time
 import os
 
 
-lista_cartas = ["A","A","B","B","C","C","D","D"]
+lista_cartas = ["A","A","B","B"]
 cartas = ['A','B','C','D','E','F','G','H']
-LISTA_VACIA = ['[1]','[2]','[3]','[4]','[5]','[6]','[7]','[8]']
-lista_juego = ['[1]','[2]','[3]','[4]','[5]','[6]','[7]','[8]']
+LISTA_VACIA = [[1],[2],[3],[4]]
+lista_juego = [[1],[2],[3],[4]]
 #lista_cartas = ["A","A","B","B","C","C","D","D","E","E","F","F","G","G","H","H"]
-#LISTA_VACIA = ['[1]','[2]','[3]','[4]','[5]','[6]','[7]','[8]','[9]','[10]','[11]','[12]','[13]','[14]','[15]','[16]']
-#lista_juego = ['[1]','[2]','[3]','[4]','[5]','[6]','[7]','[8]','[9]','[10]','[11]','[12]','[13]','[14]','[15]','[16]']
+#LISTA_VACIA = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
+#lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
 
 def mezclar(lista):
     '''
@@ -21,12 +21,12 @@ def mezclar(lista):
     random.shuffle(lista_mezclada)
     return lista_mezclada
 
-def validar_ingreso(numero,lista_cartas):
+def validar_ingreso(numero,lista_cartas,lista_juego):
     '''
     Validar que el ingreso no sea una valor fuera de rango/no se encuentre disponible/no sea un numero
     Creada por: Facundo Polech
     '''
-    while not numero.isdigit() or int(numero)<=0 or int(numero)>len(lista_cartas):
+    while not numero.isdigit() or int(numero)<=0 or int(numero)>len(lista_cartas) or lista_juego[int(numero)-1] == '[*]':
         numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada en el tablero: ")
     return int(numero)
 
@@ -75,6 +75,7 @@ def nombres_jugadores():
     boton.pack()
 
     raiz.mainloop()
+    return
 
 def datos_jugadores(lista_nombres_ingresados):
     '''
@@ -88,20 +89,22 @@ def datos_jugadores(lista_nombres_ingresados):
     
     resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,(diccionario,lista_nombres_ingresados))
     ganador(resultados)
+    return
    
 
 def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,datos_jugadores):
     '''
     Determina si las cartas ingresadas son iguales o no, en caso positivo acredita un punto al jugador
-    Creada por: Juan Pedro Demarco
+    Creada por: todos los integrantes.
     '''
     CANT_PUNTOS=0
     CANT_INTENTOS=1 
 
-    lista_cartas= mezclar(lista_cartas)
+    #lista_cartas= mezclar(lista_cartas)
     jugadores = datos_jugadores
     diccionario = jugadores[0]
     lista_participantes = jugadores[1]
+    i=0
     
     jugador = 0
     contador_jugadas_totales=0
@@ -110,12 +113,12 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,datos_jugadore
         print(f"Turno de :{lista_participantes[jugador]}")
         imprimir_tablero(lista_juego)
         primera_posicion= input("Seleccione una posición: ")  
-        primera_posicion = validar_ingreso(primera_posicion,lista_cartas)
+        primera_posicion = validar_ingreso(primera_posicion,lista_cartas,lista_juego)
         lista_juego[primera_posicion-1] = lista_cartas[primera_posicion-1]
         imprimir_tablero(lista_juego)
                 
         segunda_posicion= input("Seleccione una segunda posición: ")
-        segunda_posicion = validar_ingreso(segunda_posicion,lista_cartas)
+        segunda_posicion = validar_ingreso(segunda_posicion,lista_cartas,lista_juego)
         lista_juego[segunda_posicion-1] = lista_cartas[segunda_posicion-1]
         imprimir_tablero(lista_juego)
             
@@ -133,6 +136,11 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,datos_jugadore
             #Si las fichas son iguales:
         elif lista_juego[primera_posicion-1] == lista_juego[segunda_posicion-1]:
             diccionario[lista_participantes[jugador]][CANT_PUNTOS] +=1
+            lista_juego[primera_posicion-1] = '[*]'
+            lista_juego[segunda_posicion-1] = '[*]'
+            lista_cartas[primera_posicion-1] = '[*]'
+            lista_cartas[segunda_posicion-1] = '[*]'
+
         time.sleep(2.5)
         os.system("cls")
         diccionario[lista_participantes[jugador]][CANT_INTENTOS] +=1 
@@ -160,6 +168,7 @@ def ganador(resultados):
         print(f"El ganador de la partida es {resultados[0][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{resultados[0][TUPLA_DATOS][INTENTOS]}.")
     else:
         print(f"El ganador de la partida es {resultados[0][NOMBRE]}, con {numero_max} puntos totales.")
+    return
 
 def main():
     '''Creada por: ...'''
@@ -167,7 +176,7 @@ def main():
     while seguir == "s":
         nombres_jugadores()
         seguir= input("¿Seguir jugando?(s/n): ")
-
+    return  
 tiempo_inicial = time.time()
 
 main()
