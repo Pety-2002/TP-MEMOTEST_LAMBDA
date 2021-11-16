@@ -11,9 +11,6 @@ lista_juego = ['[1]','[2]','[3]','[4]','[5]','[6]','[7]','[8]']
 #LISTA_VACIA = ['[1]','[2]','[3]','[4]','[5]','[6]','[7]','[8]','[9]','[10]','[11]','[12]','[13]','[14]','[15]','[16]']
 #lista_juego = ['[1]','[2]','[3]','[4]','[5]','[6]','[7]','[8]','[9]','[10]','[11]','[12]','[13]','[14]','[15]','[16]']
 
-CANT_FICHAS_IGUALES=0
-CANT_INTENTOS=1
-
 def mezclar(lista):
     '''
     para mezclar las "cartas" y se encuentren en diferentes posiciones en c/partida (se mantienen los caracteres) (etapa 4)
@@ -37,7 +34,6 @@ def imprimir_tablero(lista_juego):
     Imprimo el tablero.
     Creada por: JuanP
     '''
-    #me ahorro todo esto -> print(lista_juego[:4], "\n", lista_juego[4:8], "\n", lista_juego[8:12], "\n", lista_juego[12:16], sep = "")
     for contador in range(0,len(lista_juego),4):
         print(lista_juego[contador:4+contador])
     return
@@ -84,36 +80,32 @@ def datos_jugadores(lista_nombres_ingresados):
     Crea el diccionario donde se registraran los datos de cada jugador
     Creada por: Juan Pedro Demarco
     '''
-    #jugadores = int(input("Cuantos participantes desean jugar:? "))
     diccionario = {}
-    #for i in range(jugadores):
-    #    jugador= input("Nombre del jugador: ")
-    #    lista_participantes.append(jugador)
     lista_nombres_ingresados = mezclar(lista_nombres_ingresados)
     for jugador in lista_nombres_ingresados:
-        diccionario[jugador] = [0,0] #[cantidad de fichas iguales, cantidad de intentos]
+        diccionario[jugador] = [0,0]
     
     resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,(diccionario,lista_nombres_ingresados))
     ganador(resultados)
-    
-    
+   
 
-def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,tupla):
+def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,datos_jugadores):
     '''
     Determina si las cartas ingresadas son iguales o no, en caso positivo acredita un punto al jugador
     Creada por: Juan Pedro Demarco
     '''
+    CANT_PUNTOS=0
+    CANT_INTENTOS=1 
 
     lista_cartas= mezclar(lista_cartas)
-    jugadores = tupla#jugadores va a ser una tupla, el primer elemento es un diccionario, el segundo una lista con los nombres de los participantes.
+    jugadores = datos_jugadores
     diccionario = jugadores[0]
     lista_participantes = jugadores[1]
+    
     jugador = 0
     contador_jugadas_totales=0
 
     while lista_juego != lista_cartas:
-        #comienzo del juego
-        i = 0 #index de la lista, lo utilizo para eliminar elementos cuando el jugador acierta el par.
         print(f"Turno de :{lista_participantes[jugador]}")
         imprimir_tablero(lista_juego)
         primera_posicion= input("Seleccione una posición: ")  
@@ -138,10 +130,9 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, cartas,tupla):
 
             #Si las fichas son iguales:
         elif lista_juego[primera_posicion-1] == lista_juego[segunda_posicion-1]:
-            diccionario[lista_participantes[jugador]][0] +=1 #le sumo un punto
-
+            diccionario[lista_participantes[jugador]][CANT_PUNTOS] +=1
         os.system("cls")
-        diccionario[lista_participantes[jugador]][1] +=1 #le sumo los intentos totales de cada uno
+        diccionario[lista_participantes[jugador]][CANT_INTENTOS] +=1 
         contador_jugadas_totales += 1
     return diccionario 
 
@@ -150,18 +141,22 @@ def ganador(resultados):
     En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
     Creada por: Juan Pedro.
     '''
-    resultados = [(participante,puntos) for participante,puntos in resultados.items()] #hago una lista en base a los items del diccionario
-    resultados.sort(key = lambda tupla: tupla[1][0] ,reverse = True) #se ordenan todos los resultados,mayor a menor
-    numero_max = resultados[0][1][0] #numero_max es el primer elemento, del segundo elemento(lista), de mi primer tupla.
+    
+    NOMBRE=PUNTOS=0
+    TUPLA_DATOS=INTENTOS=1
+
+    resultados = [(participante,puntos) for participante,puntos in resultados.items()]
+    resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
+    numero_max = resultados[0][TUPLA_DATOS][PUNTOS] 
     contador = 0
     for player in resultados:
-        if numero_max == player[1][0]:#agarro cada primer elemento de la lista de cada tupla.
+        if numero_max == player[TUPLA_DATOS][PUNTOS]:
             contador +=1
     if contador>1:
-        resultados.sort(key = lambda tupla: tupla[1][1])#se ordenan todos los resultados en base a la cantidad de intentos.
-        print(f"El ganador de la partida es {resultados[0][0]}, por caso de empate y con una menor cantidad de intentos de valor:{resultados[0][1][1]}.")
+        resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
+        print(f"El ganador de la partida es {resultados[0][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{resultados[0][TUPLA_DATOS][INTENTOS]}.")
     else:
-        print(f"El ganador de la partida es {resultados[0][0]}, con {numero_max} puntos totales.")
+        print(f"El ganador de la partida es {resultados[0][NOMBRE]}, con {numero_max} puntos totales.")
 
 def main():
     '''Creada por: ...'''
