@@ -3,14 +3,6 @@ from tkinter import *
 import time
 import os
 
-
-cartas = ['A','B','C','D','E','F','G','H']
-#lista_cartas = ["A","A","B","B","C","C","D","D","E","E","F","F","G","G","H","H"]
-LISTA_VACIA = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
-#lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
-
-
-
 def mezclar(lista):
     '''
     Para mezclar las "cartas" y se encuentren en diferentes posiciones en c/partida (se mantienen los caracteres) (etapa 4)
@@ -92,29 +84,29 @@ def nombres_jugadores():
 
 def datos_jugadores(lista_nombres_ingresados):
     ''' 
-    Crea el diccionario donde se registraran los datos de cada jugador
+    Crea el diccionario donde se registraran los datos de cada jugador.
     Creada por: Juan Pedro Demarco
     '''
     diccionario = {}
     lista_nombres_ingresados = mezclar(lista_nombres_ingresados)
     for jugador in lista_nombres_ingresados:
         diccionario[jugador] = [0,0]
-
     return  diccionario
    
 
-def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores):
+def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #datos_jugadores es una tupla!
     '''
-    Determina si las cartas ingresadas son iguales o no, en caso positivo acredita un punto al jugador
+    Determina si las cartas ingresadas son iguales o no, en caso positivo acredita un punto al jugador y elimina las cartas del tablero.
+    Si no son iguales, la cantidad de intentos del jugador se incrementa en uno y las cartas se dan vuelta.
     Creada por: Evangelina Zurita, Yennyfer Garcia
     '''
     CANT_PUNTOS=0
     CANT_INTENTOS=1 
 
     lista_cartas= mezclar(lista_cartas)
-    jugadores = datos_jugadores
-    diccionario = jugadores[0]
-    lista_participantes = jugadores[1]
+    
+    diccionario = datos_jugadores[0] #divido mi tupla en diccionario y nombre de usuarios.
+    lista_participantes = datos_jugadores[1]
     
     jugador = 0
     contador_jugadas_totales=0
@@ -134,11 +126,13 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores):
             
         #Si las fichas son distintas:
         if lista_juego[primera_posicion-1] != lista_juego[segunda_posicion-1]:
-            lista_juego[primera_posicion-1] = LISTA_VACIA[primera_posicion-1]
-            lista_juego[segunda_posicion-1] = LISTA_VACIA[segunda_posicion-1]
-            print("Los cartas seleccionadas son distintas")
+            lista_juego[primera_posicion-1] = LISTA_VACIA[primera_posicion-1] # Les asigno a las fichas el valor que tenian antes de darse vuelta.
+            lista_juego[segunda_posicion-1] = LISTA_VACIA[segunda_posicion-1] # Les asigno a las fichas el valor que tenian antes de darse vuelta.
+            print("Los cartas seleccionadas son distintas!")
 
-            if jugador == len(jugadores)-1: # Esta funcion es necesaria para que pueda repetir un jugador.
+            diccionario[lista_participantes[jugador]][CANT_INTENTOS] +=1
+
+            if jugador == len(lista_participantes)-1: # Esta funcion es necesaria para que pueda repetir un jugador.
                 jugador = 0
             else:
                 jugador +=1
@@ -146,14 +140,15 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores):
             #Si las fichas son iguales:
         elif lista_juego[primera_posicion-1] == lista_juego[segunda_posicion-1]:
             diccionario[lista_participantes[jugador]][CANT_PUNTOS] +=1
+            diccionario[lista_participantes[jugador]][CANT_INTENTOS] +=1
+
             lista_juego[primera_posicion-1] = '[*]'
             lista_juego[segunda_posicion-1] = '[*]'
             lista_cartas[primera_posicion-1] = '[*]'
             lista_cartas[segunda_posicion-1] = '[*]'
-
+            
         time.sleep(2.5)
         os.system("cls")
-        diccionario[lista_participantes[jugador]][CANT_INTENTOS] +=1 
         contador_jugadas_totales += 1
     return diccionario 
 
@@ -166,9 +161,30 @@ def ganador(resultados):
     NOMBRE=PUNTOS=0
     TUPLA_DATOS=INTENTOS=1
 
-    resultados = [(participante,puntos) for participante,puntos in resultados.items()]
+    resultados = [(participante,puntos) for participante,puntos in resultados.items()] #lista de tuplas a partir de diccionario.
+
+    PUNTOS_JUGADOR_1 = resultados[0][TUPLA_DATOS][PUNTOS]
+    PUNTOS_JUGADOR_2 = resultados[1][TUPLA_DATOS][PUNTOS]
+    INTENTOS_JUGADOR_1 = resultados[0][TUPLA_DATOS][INTENTOS]
+    INTENTOS_JUGADOR_2 = resultados[1][TUPLA_DATOS][INTENTOS]
+
+    if PUNTOS_JUGADOR_1 > PUNTOS_JUGADOR_2:
+        print(f"El ganador de la partida es {resultados[0][NOMBRE]}, con {PUNTOS_JUGADOR_1} puntos totales.")
+
+    elif PUNTOS_JUGADOR_1 < PUNTOS_JUGADOR_2:
+        print(f"El ganador de la partida es {resultados[1][NOMBRE]}, con {PUNTOS_JUGADOR_2} puntos totales.")
+
+    #en caso de empate, considero ganador al jugador con menos intentos.
+    elif INTENTOS_JUGADOR_1 < INTENTOS_JUGADOR_2:
+        print(f"El ganador de la partida es {resultados[0][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{INTENTOS_JUGADOR_1}.")
+
+    elif INTENTOS_JUGADOR_1 > INTENTOS_JUGADOR_2:
+        print(f"El ganador de la partida es {resultados[1][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{INTENTOS_JUGADOR_2}.")
+    
+    '''
+    Si quiero desarrollar un MEMOTEST con mas de dos jugadores, utilizar esto.
+    numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
-    numero_max = resultados[0][TUPLA_DATOS][PUNTOS] 
     contador = 0
     for player in resultados:
         if numero_max == player[TUPLA_DATOS][PUNTOS]:
@@ -178,7 +194,7 @@ def ganador(resultados):
         print(f"El ganador de la partida es {resultados[0][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{resultados[0][TUPLA_DATOS][INTENTOS]}.")
     else:
         print(f"El ganador de la partida es {resultados[0][NOMBRE]}, con {numero_max} puntos totales.")
-
+    '''
 
 def main():
     '''
@@ -186,14 +202,18 @@ def main():
     '''
     seguir = "s"
     while seguir == "s":
-        lista = nombres_jugadores()
-        diccionario = datos_jugadores(lista)
+        lista_nombres_usuarios = nombres_jugadores()
+        diccionario = datos_jugadores(lista_nombres_usuarios)
         lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
         lista_cartas = ["A","A","B","B","C","C","D","D","E","E","F","F","G","G","H","H"]
-        resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista))
+        resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
         ganador(resultados)
         seguir= input("¿Seguir jugando?(s/n): ")
 #------------------------------------- Comienzo del juego -------------------------------------------#
+
+cartas = ['A','B','C','D','E','F','G','H']
+LISTA_VACIA = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
+
 tiempo_inicial = time.time()
 main()
 tiempo_partida = time.time() - tiempo_inicial
