@@ -5,41 +5,46 @@ import os
 
 
 cartas = ['A','B','C','D','E','F','G','H']
-LISTA_VACIA = [[1],[2],[3],[4]]
 #lista_cartas = ["A","A","B","B","C","C","D","D","E","E","F","F","G","G","H","H"]
-#LISTA_VACIA = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
+LISTA_VACIA = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
 #lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
 
 
 
 def mezclar(lista):
-    ''' Para mezclar las "cartas" y se encuentren en diferentes posiciones en c/partida (se mantienen los caracteres) (etapa 4)
-    Creada por: ...'''
+    '''
+    Para mezclar las "cartas" y se encuentren en diferentes posiciones en c/partida (se mantienen los caracteres) (etapa 4)
+    Creada por: Facundo Polech
+    '''
     lista_mezclada = lista
     random.shuffle(lista_mezclada)
     return lista_mezclada
 
 
 def validar_ingreso(numero,lista_cartas,lista_juego):
-    ''' Validar que el ingreso no sea una valor fuera de rango/no se encuentre disponible/no sea un numero
-    Creada por: Facundo Polech'''
+    '''
+    Validar que el ingreso no sea una valor fuera de rango/no se encuentre disponible/no sea un numero
+    Creada por: Facundo Polech
+    '''
     while not numero.isdigit() or int(numero)<=0 or int(numero)>len(lista_cartas) or lista_juego[int(numero)-1] == '[*]':
         numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada en el tablero: ")
     return int(numero)
 
 
 def imprimir_tablero(lista_juego):
-    ''' Imprimo el tablero.
-    Creada por: JuanP'''
+    '''
+    Imprimo el tablero.
+    Creada por: JuanP
+    '''
     for contador in range(0,len(lista_juego),4):
         print(lista_juego[contador:4+contador])
-    return
 
 
 def nombres_jugadores():
-    """ Crea la interfaz para solicitar el nombre de los jugadores
-    Creada por: Milton Fernandez
-    NOTA: HACER QUE SE CREEN BLOQUES DE INGRESO DE NOMBRE POR CADA PARTICIPANTE"""
+    """
+    Crea la interfaz para solicitar el nombre de los jugadores
+    Creada por: Milton Fernandez, Yennyfer Garcia.
+    """
     raiz = Tk()
     lista = []
     raiz.title("Ingreso Usuarios")
@@ -63,8 +68,12 @@ def nombres_jugadores():
     cuadro_nombre2=Entry(mi_frame)
     cuadro_nombre2.grid(row=1,column=1,padx = 10, pady =10)
 
-    #Verifica que se ingresaron ambos nombres
+
     def obtener_nombres():
+        '''
+        Chequea que se hayan ingresado ambos nombres de los jugadores.
+        Creada por: Julieta Margenats
+        '''
         if cuadro_nombre1.get() != '' and cuadro_nombre2.get() != '':
             lista.append(cuadro_nombre1.get()), lista.append(cuadro_nombre2.get())
             raiz.destroy()
@@ -82,8 +91,10 @@ def nombres_jugadores():
 
 
 def datos_jugadores(lista_nombres_ingresados):
-    ''' Crea el diccionario donde se registraran los datos de cada jugador
-    Creada por: Juan Pedro Demarco'''
+    ''' 
+    Crea el diccionario donde se registraran los datos de cada jugador
+    Creada por: Juan Pedro Demarco
+    '''
     diccionario = {}
     lista_nombres_ingresados = mezclar(lista_nombres_ingresados)
     for jugador in lista_nombres_ingresados:
@@ -93,8 +104,10 @@ def datos_jugadores(lista_nombres_ingresados):
    
 
 def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores):
-    ''' Determina si las cartas ingresadas son iguales o no, en caso positivo acredita un punto al jugador
-    Creada por: todos los integrantes.'''
+    '''
+    Determina si las cartas ingresadas son iguales o no, en caso positivo acredita un punto al jugador
+    Creada por: Evangelina Zurita, Yennyfer Garcia
+    '''
     CANT_PUNTOS=0
     CANT_INTENTOS=1 
 
@@ -146,8 +159,10 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores):
 
 
 def ganador(resultados):
-    ''' En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
-    Creada por: Juan Pedro.'''
+    '''
+    En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
+    Creada por: Juan Pedro, Facundo Polech
+    '''
     NOMBRE=PUNTOS=0
     TUPLA_DATOS=INTENTOS=1
 
@@ -163,25 +178,21 @@ def ganador(resultados):
         print(f"El ganador de la partida es {resultados[0][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{resultados[0][TUPLA_DATOS][INTENTOS]}.")
     else:
         print(f"El ganador de la partida es {resultados[0][NOMBRE]}, con {numero_max} puntos totales.")
-    return 
-
-
 
 
 def main():
-    '''Creada por: ...'''
+    '''
+    Creada por: Julieta Margenats
+    '''
     seguir = "s"
-    lista = nombres_jugadores()
-    diccionario = datos_jugadores(lista)
     while seguir == "s":
-
-        lista_juego = [[1],[2],[3],[4]]
-        lista_cartas = ["A","A","B","B"]
+        lista = nombres_jugadores()
+        diccionario = datos_jugadores(lista)
+        lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
+        lista_cartas = ["A","A","B","B","C","C","D","D","E","E","F","F","G","G","H","H"]
         resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista))
         ganador(resultados)
         seguir= input("¿Seguir jugando?(s/n): ")
-    return  
-
 #------------------------------------- Comienzo del juego -------------------------------------------#
 tiempo_inicial = time.time()
 main()
