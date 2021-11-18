@@ -21,11 +21,11 @@ def mezclar(lista):
 
 def validar_ingreso(numero,lista_cartas,lista_juego):
     '''
-    Validar que el ingreso no sea una valor fuera de rango/no se encuentre disponible/no sea un numero
+    Validar que el ingreso no sea una valor fuera de rango/no se encuentre disponible/no sea un numero/no sea una ficha ya tomada.
     Creada por: Facundo Polech
     '''
-    while not numero.isdigit() or int(numero)<=0 or int(numero)>len(lista_cartas) or lista_juego[int(numero)-1] == '[*]':
-        numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada en el tablero: ")
+    while not numero.isdigit() or int(numero)<=0 or int(numero)>len(lista_cartas) or lista_juego[int(numero)-1] == '[*]' or lista_juego[int(numero)-1] in lista_cartas:
+        numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada EXISTENTE en el tablero: ")
     return int(numero)
 
 
