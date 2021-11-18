@@ -1,3 +1,9 @@
+'''
+---------------------------LINK A VIDEOS---------------------------------------------
+https://drive.google.com/drive/folders/1CpVwXRmpsiC1mnHVLtzNG3dv2uPU4Zfy?usp=sharing
+-------------------------------------------------------------------------------------
+'''
+
 import random
 from tkinter import *
 import time
@@ -25,7 +31,7 @@ def validar_ingreso(numero,lista_cartas,lista_juego):
 
 def imprimir_tablero(lista_juego):
     '''
-    Imprimo el tablero.
+    Imprimo el tablero. Creo slices de 4 para imprimir por linea 4 fichas.
     Creada por: JuanP
     '''
     for contador in range(0,len(lista_juego),4):
@@ -90,7 +96,7 @@ def datos_jugadores(lista_nombres_ingresados):
     diccionario = {}
     lista_nombres_ingresados = mezclar(lista_nombres_ingresados)
     for jugador in lista_nombres_ingresados:
-        diccionario[jugador] = [0,0]
+        diccionario[jugador] = [0,0] #[cantidad de puntos, cantidad de intentos]
     return  diccionario
    
 
@@ -183,9 +189,11 @@ def ganador(resultados):
     
     '''
     Si quiero desarrollar un MEMOTEST con mas de dos jugadores, utilizar esto.
-    numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
+    resultados = [(participante,puntos) for participante,puntos in resultados.items()] #lista de tuplas a partir de diccionario.
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
+    numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
     contador = 0
+
     for player in resultados:
         if numero_max == player[TUPLA_DATOS][PUNTOS]:
             contador +=1
