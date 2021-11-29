@@ -42,7 +42,7 @@ def imprimir_tablero(lista_juego):
 
 def nombres_jugadores():
     """
-    Crea la interfaz para solicitar el nombre de los jugadores
+    Crea la interfaz para solicitar el nombre de los jugadores 
     Creada por: Milton Fernandez, Yennyfer Garcia.
     """
     raiz = Tk()
@@ -50,7 +50,7 @@ def nombres_jugadores():
     raiz.title("Ingreso Usuarios")
     raiz.config(bg="red")
     raiz.geometry('300x200')
-    mi_frame=Frame(raiz)
+    mi_frame=Frame(raiz)  
     mi_frame.pack()
     mi_frame.config(bg="red")
 
@@ -86,7 +86,7 @@ def nombres_jugadores():
     boton_enviar=Button(raiz,text="Enviar", command = lambda: [obtener_nombres()])
     boton_enviar.pack()
 
-    raiz.mainloop()
+    raiz.mainloop() 
     return lista
 
 
