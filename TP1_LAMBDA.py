@@ -1,8 +1,3 @@
-'''
----------------------------LINK A VIDEOS---------------------------------------------
-https://drive.google.com/drive/folders/1CpVwXRmpsiC1mnHVLtzNG3dv2uPU4Zfy?usp=sharing
--------------------------------------------------------------------------------------
-'''
 
 import random
 from tkinter import *
@@ -46,26 +41,49 @@ def nombres_jugadores():
     raiz = Tk()
     lista = []
     raiz.title("Ingreso Usuarios")
-    raiz.config(bg="red")
-    raiz.geometry('300x200')
-    mi_frame=Frame(raiz)  
+    raiz.config(bg="#D5D8DC")
+    raiz.geometry('350x220')
+    mi_frame=Frame(raiz)
     mi_frame.pack()
-    mi_frame.config(bg="red")
+    mi_frame.config(bg="#D5D8DC")
 
     #----------------------- Labels ---------------------#
-    nombre_usuario1=Label(mi_frame, text="Nombre Usuario 1: ")
-    nombre_usuario1.grid(row=0, column=0, padx = 10, pady =10)
+    nombre_usuario1=Label(mi_frame, text="Nombre Usuario 1",bg="#D5D8DC")
+    nombre_usuario1.grid(row=1, column=0, padx = 10, pady =10)
 
-    nombre_usuario2=Label(mi_frame, text="Nombre Usuario 2: ")
-    nombre_usuario2.grid(row=1, column=0, padx = 10, pady =10)
+    contraseña_usuario1=Label(mi_frame, text="Contraseña Usuario 1",bg="#D5D8DC")
+    contraseña_usuario1.grid(row=2, column=0, padx = 10, pady =10)
+    
+    nombre_usuario2=Label(mi_frame, text="Nombre Usuario 2",bg="#D5D8DC")
+    nombre_usuario2.grid(row=3, column=0, padx = 10, pady =10)
+
+    contraseña_usuario2=Label(mi_frame, text="Contraseña Usuario 2",bg="#D5D8DC")
+    contraseña_usuario2.grid(row=4, column=0, padx = 10, pady =10)
 
     #---------------- Entradas de texto -----------------#
-    cuadro_nombre1=Entry(mi_frame)
-    cuadro_nombre1.grid(row=0,column=1,padx = 10, pady =10)
+    cuadro_nombre1=Entry(mi_frame, border="3")
+    cuadro_nombre1.grid(row=1,column=1,padx = 10, pady =10)
 
-    cuadro_nombre2=Entry(mi_frame)
-    cuadro_nombre2.grid(row=1,column=1,padx = 10, pady =10)
+    cuadro_contraseña1=Entry(mi_frame ,border="3")
+    cuadro_contraseña1.grid(row=2,column=1,padx = 10, pady =10)
+    cuadro_contraseña1.config(show="*")
 
+    cuadro_nombre2=Entry(mi_frame,  border="3")
+    cuadro_nombre2.grid(row=3,column=1,padx = 10, pady =10)
+
+    cuadro_contraseña2=Entry(mi_frame,  border="3")
+    cuadro_contraseña2.grid(row=4,column=1,padx = 10, pady =10)
+    cuadro_contraseña2.config(show="*")
+
+    """
+    Nota: 
+
+    1. Verificar que ambos usuarios esten en el archivo de lo contrario insertar aviso de registro
+    2. Verificar que las contraseñas ingresadas sean las Correctas si no lo son avisar cual es la incorrecta
+    3. Ejecutar el juego
+
+
+    """
 
     def obtener_nombres():
         '''
@@ -81,11 +99,146 @@ def nombres_jugadores():
             usuarios.grid(row=2, column=0, padx = 10, pady =10)
 
     #------------------- Botón enviar ------------------#
-    boton_enviar=Button(raiz,text="Enviar", command = lambda: [obtener_nombres()])
-    boton_enviar.pack()
+    boton_enviar=Button(mi_frame,text="Jugar", command = lambda: [obtener_nombres()],bg="#24CA1C", fg="white",width="15", border=3)
+    boton_enviar.grid(row=5,column=0,padx = 10, pady =10)
+
+    boton_registro=Button(mi_frame,text="Registrarse",command = lambda: registro(),bg="#2DBCF1", fg="white",width="15", border=3)
+    boton_registro.grid(row=5,column=1,padx = 10, pady =10)
+
 
     raiz.mainloop() 
     return lista
+
+def leerArchivo(archivo, default):
+    """
+    Devuelve las lineas del archivo
+    Creada Por: Yennyfer Garcia
+    """
+    linea = archivo.readline()
+    return linea.rstrip().split(',') if linea else default.split(',')
+
+def agregar_linea(archivo,linea):
+    """
+    Agrega el nombre y contraseña del usuario al archivo
+    Creada Por: Yennyfer Garcia
+    """
+    archivo.write(linea + "\n")
+
+def validar_registracion(archivo,nombre):
+    """
+    Valida si el usuario se encuentra en el archivo
+    Creada Por: Yennyfer Garcia
+    """
+    end="99999"
+    linea_1=leerArchivo(archivo,end)
+    se_encuentra=False
+    while linea_1[0]!=end and se_encuentra==False:
+        if linea_1[0]==nombre:
+            se_encuentra=True
+        linea_1=leerArchivo(archivo,end)
+    return se_encuentra
+ 
+def validar_nombre_usuario(nombre_usuario):
+    """
+    Valida que el nombre del usuario cumpla con las caracteristicas requeridas
+    Creada por: Yennyfer Garcia
+    """
+    valida=False
+    guion_bajo=nombre_usuario.find("_")
+    if (4<=len(nombre_usuario)<=15) and (nombre_usuario.isalpha()== False) and (nombre_usuario.isnumeric()==False) and (guion_bajo!=-1):
+        valida=True
+    return valida
+    
+def validar_contraseña_usuario(contraseña_usuario):
+    """
+    Valida que la contraseña del usuario cumpla con las caracteristicas requeridas
+    Creada por: 
+    """
+    valida=False
+    
+    return valida
+def registro():
+    """
+    Crea la interfaz de registro de los usuarios
+    Creada Por: Yennyfer Garcia
+    """
+
+    raiz = Tk()
+    raiz.title("Registro Usuarios")
+    raiz.config(bg="#D5D8DC")
+    raiz.geometry('350x210')
+    mi_frame=Frame(raiz)
+    mi_frame.pack()
+    mi_frame.config(bg="#D5D8DC")
+
+
+    #---------- Labels ------------------
+
+    nombre_usuario=Label(mi_frame, text="Nombre Usuario",bg="#D5D8DC")
+    nombre_usuario.grid(row=1, column=0, padx = 10, pady =10)
+
+    contraseña_usuario1=Label(mi_frame, text="Contraseña",bg="#D5D8DC")
+    contraseña_usuario1.grid(row=2, column=0, padx = 10, pady =10)
+    
+    nombre_usuario2=Label(mi_frame, text="Repetir Contraseña",bg="#D5D8DC")
+    nombre_usuario2.grid(row=3, column=0, padx = 10, pady =10)
+
+    #---------- Entry-------------------------
+    
+    cuadro_nombre=Entry(mi_frame, border="3")
+    cuadro_nombre.grid(row=1,column=1,padx = 10, pady =10)
+
+    cuadro_contraseña=Entry(mi_frame ,border="3")
+    cuadro_contraseña.grid(row=2,column=1,padx = 10, pady =10)
+    cuadro_contraseña.config(show="*")
+
+
+    contraseña_repetida=Entry(mi_frame,  border="3")
+    contraseña_repetida.grid(row=3,column=1,padx = 10, pady =10)
+    contraseña_repetida.config(show="*")
+
+
+    mensaje=StringVar()
+    mensaje_validacion=Label(mi_frame,textvariable=mensaje)
+    mensaje_validacion.grid(row=4,column=0,padx = 10, pady =10)
+    mensaje_validacion.config(bg="#D5D8DC",fg="red")
+
+    
+    def guardar_usuarios(nombre, contraseña, contraseña_repetida):
+        """
+        Agrega a los usuarios al archivo
+        Creada Por: Yennyfer Garcia
+        """
+        nombre_valido=validar_nombre_usuario(nombre)
+        if (contraseña_repetida==contraseña) and nombre_valido :
+            archivo_usuarios=open("registro_usuarios.txt","r+")
+            se_encuentra=validar_registracion(archivo_usuarios,nombre)
+        
+            if se_encuentra==True:
+                mensaje.set(f"Usted ya se encuentra registrado")
+            else:
+                linea=(f"{nombre},{contraseña}")
+                agregar_linea(archivo_usuarios,linea)
+                mensaje.set(f"Se ha registrado exitosamente")
+            archivo_usuarios.close()
+
+        else:
+            mensaje.set(f"alguno de los datos ingresados \n es invalido")
+    #----------Boton---------------------------
+    """
+    Nota: 
+    1. Verificar que contraseña y contraseña repetida sean iguales
+    2. Que el usuario no se encuentre previamente en el archivo
+    3. Guardar el nombre y la contraseña en el archivo
+    """
+
+    boton_crear_ususario=Button(raiz,text="Crear Usuario",command= lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get()) ,bg="#24CA1C", fg="white",width="15", border=3)
+    boton_crear_ususario.pack()
+
+
+    raiz.mainloop() 
+
+
 
 
 def datos_jugadores(lista_nombres_ingresados):
@@ -210,6 +363,7 @@ def main():
     '''
     seguir = "s"
     while seguir == "s":
+        registro()
         lista_nombres_usuarios = nombres_jugadores()
         diccionario = datos_jugadores(lista_nombres_usuarios)
         lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
