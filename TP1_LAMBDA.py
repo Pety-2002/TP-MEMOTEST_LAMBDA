@@ -13,7 +13,6 @@ def mezclar(lista):
     random.shuffle(lista_mezclada)
     return lista_mezclada
 
-
 def validar_ingreso(numero,lista_cartas,lista_juego):
     '''
     Validar que el ingreso no sea una valor fuera de rango/no se encuentre disponible/no sea un numero/no sea una ficha ya tomada.
@@ -23,7 +22,6 @@ def validar_ingreso(numero,lista_cartas,lista_juego):
         numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada EXISTENTE en el tablero: ")
     return int(numero)
 
-
 def imprimir_tablero(lista_juego):
     '''
     Imprimo el tablero. Creo slices de 4 para imprimir por linea 4 fichas.
@@ -31,83 +29,6 @@ def imprimir_tablero(lista_juego):
     '''
     for contador in range(0,len(lista_juego),4):
         print(lista_juego[contador:4+contador])
-
-
-def nombres_jugadores():
-    """
-    Crea la interfaz para solicitar el nombre de los jugadores 
-    Creada por: Milton Fernandez, Yennyfer Garcia.
-    """
-    raiz = Tk()
-    lista = []
-    raiz.title("Ingreso Usuarios")
-    raiz.config(bg="#D5D8DC")
-    raiz.geometry('350x220')
-    mi_frame=Frame(raiz)
-    mi_frame.pack()
-    mi_frame.config(bg="#D5D8DC")
-
-    #----------------------- Labels ---------------------#
-    nombre_usuario1=Label(mi_frame, text="Nombre Usuario 1",bg="#D5D8DC")
-    nombre_usuario1.grid(row=1, column=0, padx = 10, pady =10)
-
-    contraseña_usuario1=Label(mi_frame, text="Contraseña Usuario 1",bg="#D5D8DC")
-    contraseña_usuario1.grid(row=2, column=0, padx = 10, pady =10)
-    
-    nombre_usuario2=Label(mi_frame, text="Nombre Usuario 2",bg="#D5D8DC")
-    nombre_usuario2.grid(row=3, column=0, padx = 10, pady =10)
-
-    contraseña_usuario2=Label(mi_frame, text="Contraseña Usuario 2",bg="#D5D8DC")
-    contraseña_usuario2.grid(row=4, column=0, padx = 10, pady =10)
-
-    #---------------- Entradas de texto -----------------#
-    cuadro_nombre1=Entry(mi_frame, border="3")
-    cuadro_nombre1.grid(row=1,column=1,padx = 10, pady =10)
-
-    cuadro_contraseña1=Entry(mi_frame ,border="3")
-    cuadro_contraseña1.grid(row=2,column=1,padx = 10, pady =10)
-    cuadro_contraseña1.config(show="*")
-
-    cuadro_nombre2=Entry(mi_frame,  border="3")
-    cuadro_nombre2.grid(row=3,column=1,padx = 10, pady =10)
-
-    cuadro_contraseña2=Entry(mi_frame,  border="3")
-    cuadro_contraseña2.grid(row=4,column=1,padx = 10, pady =10)
-    cuadro_contraseña2.config(show="*")
-
-    """
-    Nota: 
-
-    1. Verificar que ambos usuarios esten en el archivo de lo contrario insertar aviso de registro
-    2. Verificar que las contraseñas ingresadas sean las Correctas si no lo son avisar cual es la incorrecta
-    3. Ejecutar el juego
-
-
-    """
-
-    def obtener_nombres():
-        '''
-        Chequea que se hayan ingresado ambos nombres de los jugadores.
-        Creada por: Julieta Margenats
-        '''
-        if cuadro_nombre1.get() != '' and cuadro_nombre2.get() != '':
-            lista.append(cuadro_nombre1.get()), lista.append(cuadro_nombre2.get())
-            raiz.destroy()
-        
-        else: 
-            usuarios=Label(mi_frame, text="Por favor \n ingrese ambos usuarios")
-            usuarios.grid(row=2, column=0, padx = 10, pady =10)
-
-    #------------------- Botón enviar ------------------#
-    boton_enviar=Button(mi_frame,text="Jugar", command = lambda: [obtener_nombres()],bg="#24CA1C", fg="white",width="15", border=3)
-    boton_enviar.grid(row=5,column=0,padx = 10, pady =10)
-
-    boton_registro=Button(mi_frame,text="Registrarse",command = lambda: registro(),bg="#2DBCF1", fg="white",width="15", border=3)
-    boton_registro.grid(row=5,column=1,padx = 10, pady =10)
-
-
-    raiz.mainloop() 
-    return lista
 
 def leerArchivo(archivo, default):
     """
@@ -157,6 +78,7 @@ def validar_contraseña_usuario(contraseña_usuario):
     valida=False
     
     return valida
+
 def registro():
     """
     Crea la interfaz de registro de los usuarios
@@ -166,7 +88,7 @@ def registro():
     raiz = Tk()
     raiz.title("Registro Usuarios")
     raiz.config(bg="#D5D8DC")
-    raiz.geometry('350x210')
+    raiz.geometry('350x230')
     mi_frame=Frame(raiz)
     mi_frame.pack()
     mi_frame.config(bg="#D5D8DC")
@@ -213,33 +135,123 @@ def registro():
         if (contraseña_repetida==contraseña) and nombre_valido :
             archivo_usuarios=open("registro_usuarios.txt","r+")
             se_encuentra=validar_registracion(archivo_usuarios,nombre)
-        
-            if se_encuentra==True:
-                mensaje.set(f"Usted ya se encuentra registrado")
+            if se_encuentra:
+                mensaje.set("Usted ya se encuentra registrado")
             else:
                 linea=(f"{nombre},{contraseña}")
                 agregar_linea(archivo_usuarios,linea)
-                mensaje.set(f"Se ha registrado exitosamente")
+                mensaje.set("Se ha registrado exitosamente")
+                #time.sleep(1.5)
+                #raiz.destroy()
             archivo_usuarios.close()
-
         else:
-            mensaje.set(f"alguno de los datos ingresados \n es invalido")
-    #----------Boton---------------------------
-    """
-    Nota: 
-    1. Verificar que contraseña y contraseña repetida sean iguales
-    2. Que el usuario no se encuentre previamente en el archivo
-    3. Guardar el nombre y la contraseña en el archivo
-    """
+            mensaje.set("alguno de los datos ingresados \n es invalido")
+        
+    def inicio():
+        raiz.destroy()
+        main()
+        
 
-    boton_crear_ususario=Button(raiz,text="Crear Usuario",command= lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get()) ,bg="#24CA1C", fg="white",width="15", border=3)
-    boton_crear_ususario.pack()
+                
+    #----------Boton---------------------------
+
+    boton_crear_ususario=Button(mi_frame,text="Crear Usuario",command= lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get()) ,bg="#24CA1C", fg="white",width="15", border=3)
+    boton_crear_ususario.grid(row=5,column=0,padx = 10, pady =10)
+    
+    boton_volver_inicio=Button(mi_frame,text="Volver inicio",command= lambda: inicio(),bg="#24CA1C", fg="white",width="15", border=3)
+    boton_volver_inicio.grid(row=5,column=1,padx = 10, pady =10)
 
 
     raiz.mainloop() 
 
+def nombres_jugadores():
+    """
+    Crea la interfaz para solicitar el nombre de los jugadores 
+    Creada por: Milton Fernandez, Yennyfer Garcia.
+    """
+    raiz = Tk()
+    lista = []
+    raiz.title("Ingreso Usuarios")
+    raiz.config(bg="#D5D8DC")
+    raiz.geometry('350x260')
+    mi_frame=Frame(raiz)
+    mi_frame.pack()
+    mi_frame.config(bg="#D5D8DC")
+
+    #----------------------- Labels ---------------------#
+    nombre_usuario1=Label(mi_frame, text="Nombre Usuario 1",bg="#D5D8DC")
+    nombre_usuario1.grid(row=1, column=0, padx = 10, pady =10)
+
+    contraseña_usuario1=Label(mi_frame, text="Contraseña Usuario 1",bg="#D5D8DC")
+    contraseña_usuario1.grid(row=2, column=0, padx = 10, pady =10)
+    
+    nombre_usuario2=Label(mi_frame, text="Nombre Usuario 2",bg="#D5D8DC")
+    nombre_usuario2.grid(row=3, column=0, padx = 10, pady =10)
+
+    contraseña_usuario2=Label(mi_frame, text="Contraseña Usuario 2",bg="#D5D8DC")
+    contraseña_usuario2.grid(row=4, column=0, padx = 10, pady =10)
+
+    #---------------- Entradas de texto -----------------#
+    cuadro_nombre1=Entry(mi_frame, border="3")
+    cuadro_nombre1.grid(row=1,column=1,padx = 10, pady =10)
+
+    cuadro_contraseña1=Entry(mi_frame ,border="3")
+    cuadro_contraseña1.grid(row=2,column=1,padx = 10, pady =10)
+    cuadro_contraseña1.config(show="*")
+
+    cuadro_nombre2=Entry(mi_frame,  border="3")
+    cuadro_nombre2.grid(row=3,column=1,padx = 10, pady =10)
+
+    cuadro_contraseña2=Entry(mi_frame,  border="3")
+    cuadro_contraseña2.grid(row=4,column=1,padx = 10, pady =10)
+    cuadro_contraseña2.config(show="*")
+
+    """
+    Nota: 
+
+    1. Verificar que ambos usuarios esten en el archivo de lo contrario insertar aviso de registro
+    2. Verificar que las contraseñas ingresadas sean las Correctas si no lo son avisar cual es la incorrecta
+    3. Ejecutar el juego
 
 
+    """
+
+    def obtener_nombres():
+        '''
+        Chequea que se hayan ingresado ambos nombres de los jugadores.
+        Creada por: Julieta Margenats
+        '''
+
+        archivo=open("registro_usuarios.txt","r")
+        nombre_1=cuadro_nombre1.get()
+        nombre_2=cuadro_nombre2.get()
+
+        se_encuentra_jugador_1=validar_registracion(archivo,nombre_1)
+        se_encuentra_jugador_2=validar_registracion(archivo,nombre_2)
+        archivo.close()
+
+        if se_encuentra_jugador_1 and se_encuentra_jugador_2:
+            lista.append(nombre_1), lista.append(nombre_2)
+            raiz.destroy()
+        
+        else: 
+            usuarios=Label(mi_frame, text="Por favor registrese",fg="red")
+            usuarios.grid(row=5, column=0, padx = 10, pady =10)
+
+    def interfaz_registro():
+        raiz.destroy()
+        registro()
+
+    #------------------- Botón enviar ------------------#
+    boton_enviar=Button(mi_frame,text="Jugar", command = lambda: [obtener_nombres()],bg="#24CA1C", fg="white",width="15", border=3)
+    boton_enviar.grid(row=6,column=0,padx = 10, pady =10)
+
+    boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(),bg="#2DBCF1", fg="white",width="15", border=3)
+    boton_registro.grid(row=6,column=1,padx = 10, pady =10)
+
+
+    raiz.mainloop() 
+    return lista
 
 def datos_jugadores(lista_nombres_ingresados):
     ''' 
@@ -251,7 +263,6 @@ def datos_jugadores(lista_nombres_ingresados):
     for jugador in lista_nombres_ingresados:
         diccionario[jugador] = [0,0] #[cantidad de puntos, cantidad de intentos]
     return  diccionario
-   
 
 def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #datos_jugadores es una tupla!
     '''
@@ -311,7 +322,6 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
         contador_jugadas_totales += 1
     return diccionario 
 
-
 def ganador(resultados):
     '''
     En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
@@ -363,7 +373,6 @@ def main():
     '''
     seguir = "s"
     while seguir == "s":
-        registro()
         lista_nombres_usuarios = nombres_jugadores()
         diccionario = datos_jugadores(lista_nombres_usuarios)
         lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
