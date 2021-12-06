@@ -45,7 +45,7 @@ def agregar_linea(archivo,linea):
     """
     archivo.write(linea + "\n")
 
-def validar_registracion(archivo,nombre):
+def validar_registracion(archivo,nombre,contraseña):
     """
     Valida si el usuario se encuentra en el archivo
     Creada Por: Yennyfer Garcia
@@ -54,11 +54,11 @@ def validar_registracion(archivo,nombre):
     linea_1=leerArchivo(archivo,end)
     se_encuentra=False
     while linea_1[0]!=end and se_encuentra==False:
-        if linea_1[0]==nombre:
+        if linea_1[0]==nombre and linea_1[1]==contraseña:
             se_encuentra=True
         linea_1=leerArchivo(archivo,end)
     return se_encuentra
- 
+
 def validar_nombre_usuario(nombre_usuario):
     """
     Valida que el nombre del usuario cumpla con las caracteristicas requeridas
@@ -69,13 +69,36 @@ def validar_nombre_usuario(nombre_usuario):
     if (4<=len(nombre_usuario)<=15) and (nombre_usuario.isalpha()== False) and (nombre_usuario.isnumeric()==False) and (guion_bajo!=-1):
         valida=True
     return valida
-    
-def validar_contraseña_usuario(contraseña_usuario):
-    """
-    Valida que la contraseña del usuario cumpla con las caracteristicas requeridas
-    Creada por: 
-    """
+
+def validar_contraseña_usuario(contraseña):
     valida=False
+    alfanumerico= (contraseña.isalpha()==False) and (contraseña.isnumeric()==False)
+    i=j=k=l=0
+    if (8<=len(contraseña)<=12) and alfanumerico  :
+        invalido=False
+        mayuscula=False
+        minuscula=False
+        guiones=False
+        caracteres_invalidos='áéíóúÁÉÍÓÚ'
+        #----------OPTIMIZAR-----------------
+        while (guiones==False) and i<len(contraseña):
+            if contraseña[i] == "-" or contraseña[i] == "_" : guiones=True
+            i+=1
+
+        while (invalido==False) and j<len(contraseña):
+            if contraseña[j] in caracteres_invalidos: invalido=True
+            j+=1
+    
+        while (mayuscula==False) and k<len(contraseña):
+            if contraseña[k].isupper():mayuscula=True
+            k+=1
+        
+        while (minuscula==False) and l<len(contraseña):
+            if contraseña[l].islower(): minuscula=True
+            l+=1
+        #--------------------------------------
+        if guiones and (invalido==False) and mayuscula and minuscula:
+            valida=True
     
     return valida
 
@@ -88,7 +111,7 @@ def registro():
     raiz = Tk()
     raiz.title("Registro Usuarios")
     raiz.config(bg="#D5D8DC")
-    raiz.geometry('350x230')
+    raiz.geometry('350x250')
     mi_frame=Frame(raiz)
     mi_frame.pack()
     mi_frame.config(bg="#D5D8DC")
@@ -122,7 +145,7 @@ def registro():
 
     mensaje=StringVar()
     mensaje_validacion=Label(mi_frame,textvariable=mensaje)
-    mensaje_validacion.grid(row=4,column=0,padx = 10, pady =10)
+    mensaje_validacion.grid(row=4,column=0, columnspan=2 ,padx = 10, pady =10)
     mensaje_validacion.config(bg="#D5D8DC",fg="red")
 
     
@@ -133,10 +156,15 @@ def registro():
         """
         nombre_valido=validar_nombre_usuario(nombre)
         if (contraseña_repetida==contraseña) and nombre_valido :
+            
             archivo_usuarios=open("registro_usuarios.txt","r+")
-            se_encuentra=validar_registracion(archivo_usuarios,nombre)
+            se_encuentra=validar_registracion(archivo_usuarios,nombre, contraseña)
+            contraseña_valida=validar_contraseña_usuario(contraseña)
+            
             if se_encuentra:
                 mensaje.set("Usted ya se encuentra registrado")
+            elif contraseña_valida==False:
+                mensaje.set("La contraseña debe contener: Entre 8 y 12 caracteres,\n una letra mayuscula, una letra minuscula (sin acentos)\ny tener un guion (bajo o medio)")
             else:
                 linea=(f"{nombre},{contraseña}")
                 agregar_linea(archivo_usuarios,linea)
@@ -221,22 +249,23 @@ def nombres_jugadores():
         Chequea que se hayan ingresado ambos nombres de los jugadores.
         Creada por: Julieta Margenats
         '''
-
         archivo=open("registro_usuarios.txt","r")
-        nombre_1=cuadro_nombre1.get()
-        nombre_2=cuadro_nombre2.get()
-
-        se_encuentra_jugador_1=validar_registracion(archivo,nombre_1)
-        se_encuentra_jugador_2=validar_registracion(archivo,nombre_2)
+        se_encuentra_jugador_1=validar_registracion(archivo,cuadro_nombre1.get(), cuadro_contraseña1.get())
         archivo.close()
 
+        #REVISAR-Repito este paso de forma provisoria, al adaptar la interfaz para mas usuarios hacer el registro de forma individual
+        archivo_2=open("registro_usuarios.txt","r")
+        se_encuentra_jugador_2=validar_registracion(archivo_2,cuadro_nombre2.get(), cuadro_contraseña2.get())
+        archivo_2.close()
+
         if se_encuentra_jugador_1 and se_encuentra_jugador_2:
-            lista.append(nombre_1), lista.append(nombre_2)
+            lista.append(cuadro_nombre1.get()), lista.append(cuadro_nombre2.get())
             raiz.destroy()
         
         else: 
             usuarios=Label(mi_frame, text="Por favor registrese",fg="red")
             usuarios.grid(row=5, column=0, padx = 10, pady =10)
+        
 
     def interfaz_registro():
         raiz.destroy()
