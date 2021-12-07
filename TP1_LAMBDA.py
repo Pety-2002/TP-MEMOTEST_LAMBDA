@@ -241,7 +241,7 @@ def nombres_jugadores():
     2. Verificar que las contraseñas ingresadas sean las Correctas si no lo son avisar cual es la incorrecta
     3. Ejecutar el juego
 
-
+ 
     """
 
     def obtener_nombres():
@@ -302,7 +302,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
     CANT_PUNTOS=0
     CANT_INTENTOS=1 
 
-    lista_cartas= mezclar(lista_cartas)
+    #lista_cartas= mezclar(lista_cartas)
     
     diccionario = datos_jugadores[0] #divido mi tupla en diccionario y nombre de usuarios.
     lista_participantes = datos_jugadores[1]
