@@ -102,6 +102,20 @@ def validar_contraseña_usuario(contraseña):
     
     return valida
 
+def validar_maximo_jugadores(archivo, jugadores): #necesita el archivo de configuracion y la longitud de la lista de jugadores para comparar
+    """
+    verifica que no se sobrepase el limite de jugadores
+    Creada Por: Julieta Margenats
+    """
+    linea = leerArchivo(archivo,',')
+    while linea[0] != 'MAXIMO_JUGADORES' and linea:
+        linea = leerArchivo(archivo, ',')
+    if int(linea[1]) > jugadores:
+        devolver = True
+    else:#si es igual a maximo de jugadores (2)
+        devolver = False
+    return devolver
+
 def registro():
     """
     Crea la interfaz de registro de los usuarios
@@ -201,7 +215,7 @@ def nombres_jugadores():
     lista = []
     raiz.title("Ingreso Usuarios")
     raiz.config(bg="#D5D8DC")
-    raiz.geometry('420x250')
+    raiz.geometry('460x250')
     mi_frame=Frame(raiz)
     mi_frame.pack()
     mi_frame.config(bg="#D5D8DC")
@@ -252,11 +266,26 @@ def nombres_jugadores():
 
         if se_encuentra_jugador:
             lista.append(cuadro_nombre.get()) #Los usuarios que se encuentran registrados se van sumando a la lista de jugadores.
-            raiz.destroy()
+            #verificacion el maximo de jugadores
+            ar_config = open('configuracion.csv', 'r')
+            maximo_jugadores = validar_maximo_jugadores(ar_config, len(lista))
+            ar_config.close()
+
+            if maximo_jugadores:
+                raiz.contador +=1
+                jugadores=Label(mi_frame, text= 'Puede seguir \n ingresando usuarios', fg="red")
+                jugadores.grid(row=5, column=2, padx = 10, pady =10)
+                jugadores.after(3000, lambda: jugadores.destroy())
+            
+            else: #Se destruye despues de 3 segundos si llega al maximo
+                maximos=Label(mi_frame, text="Maximo de jugadores alcanzado. \n El juago comenzara",fg="red")
+                maximos.grid(row=5, column=0, padx = 10, pady =10)
+                maximos.after(4000, lambda: raiz.destroy())
         
         else:
             advertencia=Label(mi_frame, text="Por favor, registrese primero.",fg="red")
-            advertencia.grid(row=5, column=0, padx = 10, pady =10) 
+            advertencia.grid(row=5, column=0, padx = 10, pady =10)
+            advertencia.after(4000, lambda: advertencia.destroy())
         
 
     def agregar_jugador():
@@ -265,8 +294,6 @@ def nombres_jugadores():
         este registrado anteriormente.
         Creada por: Juan Pedro Demarco.
         '''
-
-        raiz.contador +=1
         obtener_nombres()
         users_label.set(f'Nombre usuario {raiz.contador}:')
         contra_label.set(f'Contraseña usuario {raiz.contador}:')
@@ -285,7 +312,7 @@ def nombres_jugadores():
     boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(),bg="#2DBCF1", fg="white",width="15", border=3)
     boton_registro.grid(row=6,column=2,padx = 10, pady =10)
 
-    boton_enviar=Button(mi_frame,text="Jugar", command = lambda: [obtener_nombres()],bg="#24CA1C", fg="white",width="15", border=3)
+    boton_enviar=Button(mi_frame,text="Jugar", command = lambda: raiz.destroy(),bg="#24CA1C", fg="white",width="15", border=3)
     boton_enviar.grid(row=6,column=0,padx = 10, pady =10)
 
 
@@ -395,16 +422,16 @@ def main():
         diccionario = datos_jugadores(lista_nombres_usuarios)
         lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
         lista_cartas = ["A","A","B","B","C","C","D","D","E","E","F","F","G","G","H","H"]
+        tiempo_inicial = time.time()
         resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
+        tiempo_partida = time.time() - tiempo_inicial
         ganador(resultados)
-        seguir= input("¿Seguir jugando?(s/n): ")
+        print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
+        seguir = input("¿Seguir jugando?(s/n): ")
 #------------------------------------- Comienzo del juego -------------------------------------------#
 
 cartas = ['A','B','C','D','E','F','G','H']
 LISTA_VACIA = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
 
-tiempo_inicial = time.time()
-main()
-tiempo_partida = time.time() - tiempo_inicial
 
-print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
+main()
