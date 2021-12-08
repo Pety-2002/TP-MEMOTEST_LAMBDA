@@ -3,6 +3,7 @@ import random
 from tkinter import *
 import time
 import os
+import datetime
 
 def mezclar(lista):
     '''
@@ -392,6 +393,7 @@ def ganador(resultados):
     '''
     En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
     Creada por: Juan Pedro, Facundo Polech
+    Interfaz y archivo partidas: Milton Fernández
     '''
     raiz = Tk()
     raiz.title("Registro Usuarios")
@@ -405,6 +407,20 @@ def ganador(resultados):
     TUPLA_DATOS=INTENTOS=1
 
     resultados = [(participante,puntos) for participante , puntos in resultados.items()] #lista de tuplas a partir de diccionario.
+
+    resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
+
+    for j in range (len(resultados)):
+        archivo = open("partidas.csv", "a")
+        archivo.write("Jugador:")
+        archivo.write(str(resultados[j][NOMBRE]))
+        archivo.write("; ")
+        archivo.write("Puntos:")
+        archivo.write(str(resultados[j][TUPLA_DATOS][PUNTOS]))
+        archivo.write("; ")
+        archivo.write("Intentos:")
+        archivo.write(str(resultados[j][TUPLA_DATOS][INTENTOS]))
+        archivo.write("\n")
 
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
     numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
@@ -421,14 +437,14 @@ def ganador(resultados):
                 fondo = "#EABE3F"
             else: fondo = "#D5D8DC"
 
-            nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[j][NOMBRE]}",bg="#D5D8DC")
-            nombre_usuario.grid(row=1, column=0, padx = 10, pady =10)
+            nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[j][NOMBRE]}",bg=fondo)
+            nombre_usuario.grid(row=j, column=0, padx = 10, pady =10)
+                
+            puntos=Label(mi_frame, text=f"Cantidad de aciertos: {resultados[j][TUPLA_DATOS][PUNTOS]}",bg=fondo)
+            puntos.grid(row=j, column=1, padx = 10, pady =10)
 
-            puntos=Label(mi_frame, text=f"Cantidad de aciertos: {resultados[j][TUPLA_DATOS][PUNTOS]}",bg="#D5D8DC")
-            puntos.grid(row=1, column=1, padx = 10, pady =10)
-
-            intentos=Label(mi_frame, text=f"Cantidad de intentos: {resultados[j][TUPLA_DATOS][INTENTOS]}",bg="#D5D8DC")
-            intentos.grid(row=1, column=2, padx = 10, pady =10)
+            intentos=Label(mi_frame, text=f"Cantidad de intentos: {resultados[j][TUPLA_DATOS][INTENTOS]}",bg=fondo)
+            intentos.grid(row=j, column=2, padx = 10, pady =10)
     else:
         for i in range (len(resultados)):
             if i == 0:
@@ -458,8 +474,10 @@ def main():
     '''
     Creada por: Julieta Margenats
     '''
+    fecha = datetime.datetime.now()
     seguir = "s"
     while seguir == "s":
+        fecha_de_partida = fecha.strftime('%d/%m/%Y')
         lista_nombres_usuarios = nombres_jugadores()
         diccionario = datos_jugadores(lista_nombres_usuarios)
         #lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
@@ -470,7 +488,18 @@ def main():
         resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
         tiempo_partida = time.time() - tiempo_inicial
         ganador(resultados)
+        hora_de_finalizacion = fecha.strftime('%H:%M:%S')
         print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
+
+        archivo = open("partidas.csv", "a")
+        archivo.write("fecha_de_partida:")
+        archivo.write(fecha_de_partida)
+        archivo.write("; ")
+        archivo.write("Hora de finalizacion:")
+        archivo.write(hora_de_finalizacion)
+        archivo.write("\n")
+        archivo.write("----------------------")
+        archivo.write("\n")
         seguir = input("¿Seguir jugando?(s/n): ")
 #------------------------------------- Comienzo del juego -------------------------------------------#
 
