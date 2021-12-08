@@ -125,8 +125,8 @@ def registro():
     contraseña_usuario1=Label(mi_frame, text="Contraseña",bg="#D5D8DC")
     contraseña_usuario1.grid(row=2, column=0, padx = 10, pady =10)
     
-    nombre_usuario2=Label(mi_frame, text="Repetir Contraseña",bg="#D5D8DC")
-    nombre_usuario2.grid(row=3, column=0, padx = 10, pady =10)
+    contraseña_usuario2=Label(mi_frame, text="Repetir Contraseña",bg="#D5D8DC")
+    contraseña_usuario2.grid(row=3, column=0, padx = 10, pady =10)
 
     #---------- Entry-------------------------
     
@@ -194,45 +194,42 @@ def registro():
 
 def nombres_jugadores():
     """
-    Crea la interfaz para solicitar el nombre de los jugadores 
+    CREA LA INTERFAZ para solicitar el nombre de los jugadores 
     Creada por: Milton Fernandez, Yennyfer Garcia.
     """
     raiz = Tk()
     lista = []
     raiz.title("Ingreso Usuarios")
     raiz.config(bg="#D5D8DC")
-    raiz.geometry('350x260')
+    raiz.geometry('420x250')
     mi_frame=Frame(raiz)
     mi_frame.pack()
     mi_frame.config(bg="#D5D8DC")
 
-    #----------------------- Labels ---------------------#
-    nombre_usuario1=Label(mi_frame, text="Nombre Usuario 1",bg="#D5D8DC")
-    nombre_usuario1.grid(row=1, column=0, padx = 10, pady =10)
-
-    contraseña_usuario1=Label(mi_frame, text="Contraseña Usuario 1",bg="#D5D8DC")
-    contraseña_usuario1.grid(row=2, column=0, padx = 10, pady =10)
     
-    nombre_usuario2=Label(mi_frame, text="Nombre Usuario 2",bg="#D5D8DC")
-    nombre_usuario2.grid(row=3, column=0, padx = 10, pady =10)
+    #----------------------- Labels ---------------------#
+    raiz.contador = 1 #variable is stored in the root object
 
-    contraseña_usuario2=Label(mi_frame, text="Contraseña Usuario 2",bg="#D5D8DC")
-    contraseña_usuario2.grid(row=4, column=0, padx = 10, pady =10)
+    users_label = StringVar()
+    users_label.set(f'Nombre usuario {raiz.contador}:')
+
+    contra_label = StringVar()
+    contra_label.set(f'Contraseña usuario {raiz.contador}:')   
+
+    nombre_usuario=Label(mi_frame, textvariable = users_label,bg="#D5D8DC")
+    nombre_usuario.grid(row=1, column=0, padx = 10, pady =10)
+
+    contraseña_usuario=Label(mi_frame, textvariable = contra_label,bg="#D5D8DC")
+    contraseña_usuario.grid(row=2, column=0, padx = 10, pady =10)
 
     #---------------- Entradas de texto -----------------#
-    cuadro_nombre1=Entry(mi_frame, border="3")
-    cuadro_nombre1.grid(row=1,column=1,padx = 10, pady =10)
 
-    cuadro_contraseña1=Entry(mi_frame ,border="3")
-    cuadro_contraseña1.grid(row=2,column=1,padx = 10, pady =10)
-    cuadro_contraseña1.config(show="*")
+    cuadro_nombre=Entry(mi_frame, border="3")
+    cuadro_nombre.grid(row=1,column=1,padx = 10, pady =10)
 
-    cuadro_nombre2=Entry(mi_frame,  border="3")
-    cuadro_nombre2.grid(row=3,column=1,padx = 10, pady =10)
-
-    cuadro_contraseña2=Entry(mi_frame,  border="3")
-    cuadro_contraseña2.grid(row=4,column=1,padx = 10, pady =10)
-    cuadro_contraseña2.config(show="*")
+    cuadro_contraseña=Entry(mi_frame ,border="3")
+    cuadro_contraseña.grid(row=2,column=1,padx = 10, pady =10)
+    cuadro_contraseña.config(show="*")
 
     """
     Nota: 
@@ -241,42 +238,55 @@ def nombres_jugadores():
     2. Verificar que las contraseñas ingresadas sean las Correctas si no lo son avisar cual es la incorrecta
     3. Ejecutar el juego
 
- 
     """
 
     def obtener_nombres():
         '''
-        Chequea que se hayan ingresado ambos nombres de los jugadores.
-        Creada por: Julieta Margenats
+        Guarda el nombre del jugador en una lista, luego de conocer que ya esta registrado. En caso contrario, avisa al participante que
+        se registre primero.
+        Creada por: Julieta Margenats, Juan Pedro Demarco.
         '''
-        archivo=open("registro_usuarios.txt","r")
-        se_encuentra_jugador_1=validar_registracion(archivo,cuadro_nombre1.get(), cuadro_contraseña1.get())
+        archivo = open('registro_usuarios.txt',"r")
+        se_encuentra_jugador = validar_registracion(archivo,cuadro_nombre.get(), cuadro_contraseña.get())
         archivo.close()
 
-        #REVISAR-Repito este paso de forma provisoria, al adaptar la interfaz para mas usuarios hacer el registro de forma individual
-        archivo_2=open("registro_usuarios.txt","r")
-        se_encuentra_jugador_2=validar_registracion(archivo_2,cuadro_nombre2.get(), cuadro_contraseña2.get())
-        archivo_2.close()
-
-        if se_encuentra_jugador_1 and se_encuentra_jugador_2:
-            lista.append(cuadro_nombre1.get()), lista.append(cuadro_nombre2.get())
+        if se_encuentra_jugador:
+            lista.append(cuadro_nombre.get()) #Los usuarios que se encuentran registrados se van sumando a la lista de jugadores.
             raiz.destroy()
         
-        else: 
-            usuarios=Label(mi_frame, text="Por favor registrese",fg="red")
-            usuarios.grid(row=5, column=0, padx = 10, pady =10)
+        else:
+            advertencia=Label(mi_frame, text="Por favor, registrese primero.",fg="red")
+            advertencia.grid(row=5, column=0, padx = 10, pady =10) 
         
+
+    def agregar_jugador():
+        '''
+        Funcion que se llama cada vez que queremos agregar un jugador. Actualiza la interfaz en el proceso. Se verifica que el jugador 
+        este registrado anteriormente.
+        Creada por: Juan Pedro Demarco.
+        '''
+
+        raiz.contador +=1
+        obtener_nombres()
+        users_label.set(f'Nombre usuario {raiz.contador}:')
+        contra_label.set(f'Contraseña usuario {raiz.contador}:')
+        cuadro_nombre.delete(0, END)
+        cuadro_contraseña.delete(0, END)
+
 
     def interfaz_registro():
         raiz.destroy()
         registro()
 
     #------------------- Botón enviar ------------------#
-    boton_enviar=Button(mi_frame,text="Jugar", command = lambda: [obtener_nombres()],bg="#24CA1C", fg="white",width="15", border=3)
-    boton_enviar.grid(row=6,column=0,padx = 10, pady =10)
+    boton_agregar_jugador=Button(mi_frame,text="Agregar jugador",command = lambda: agregar_jugador(),bg="#2DBCF1", fg="white",width="15", border=3)
+    boton_agregar_jugador.grid(row=6,column=1,padx = 10, pady =10)
 
     boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(),bg="#2DBCF1", fg="white",width="15", border=3)
-    boton_registro.grid(row=6,column=1,padx = 10, pady =10)
+    boton_registro.grid(row=6,column=2,padx = 10, pady =10)
+
+    boton_enviar=Button(mi_frame,text="Jugar", command = lambda: [obtener_nombres()],bg="#24CA1C", fg="white",width="15", border=3)
+    boton_enviar.grid(row=6,column=0,padx = 10, pady =10)
 
 
     raiz.mainloop() 
@@ -361,27 +371,6 @@ def ganador(resultados):
 
     resultados = [(participante,puntos) for participante,puntos in resultados.items()] #lista de tuplas a partir de diccionario.
 
-    PUNTOS_JUGADOR_1 = resultados[0][TUPLA_DATOS][PUNTOS]
-    PUNTOS_JUGADOR_2 = resultados[1][TUPLA_DATOS][PUNTOS]
-    INTENTOS_JUGADOR_1 = resultados[0][TUPLA_DATOS][INTENTOS]
-    INTENTOS_JUGADOR_2 = resultados[1][TUPLA_DATOS][INTENTOS]
-
-    if PUNTOS_JUGADOR_1 > PUNTOS_JUGADOR_2:
-        print(f"El ganador de la partida es {resultados[0][NOMBRE]}, con {PUNTOS_JUGADOR_1} puntos totales.")
-
-    elif PUNTOS_JUGADOR_1 < PUNTOS_JUGADOR_2:
-        print(f"El ganador de la partida es {resultados[1][NOMBRE]}, con {PUNTOS_JUGADOR_2} puntos totales.")
-
-    #en caso de empate, considero ganador al jugador con menos intentos.
-    elif INTENTOS_JUGADOR_1 < INTENTOS_JUGADOR_2:
-        print(f"El ganador de la partida es {resultados[0][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{INTENTOS_JUGADOR_1}.")
-
-    elif INTENTOS_JUGADOR_1 > INTENTOS_JUGADOR_2:
-        print(f"El ganador de la partida es {resultados[1][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{INTENTOS_JUGADOR_2}.")
-    
-    '''
-    Si quiero desarrollar un MEMOTEST con mas de dos jugadores, utilizar esto.
-    resultados = [(participante,puntos) for participante,puntos in resultados.items()] #lista de tuplas a partir de diccionario.
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
     numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
     contador = 0
@@ -394,7 +383,7 @@ def ganador(resultados):
         print(f"El ganador de la partida es {resultados[0][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{resultados[0][TUPLA_DATOS][INTENTOS]}.")
     else:
         print(f"El ganador de la partida es {resultados[0][NOMBRE]}, con {numero_max} puntos totales.")
-    '''
+    
 
 def main():
     '''
