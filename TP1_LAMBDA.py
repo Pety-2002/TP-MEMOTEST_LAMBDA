@@ -393,10 +393,18 @@ def ganador(resultados):
     En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
     Creada por: Juan Pedro, Facundo Polech
     '''
+    raiz = Tk()
+    raiz.title("Registro Usuarios")
+    raiz.config(bg="#D5D8DC")
+    raiz.geometry('500x250')
+    mi_frame=Frame(raiz)
+    mi_frame.pack()
+    mi_frame.config(bg="#D5D8DC")
+
     NOMBRE=PUNTOS=0
     TUPLA_DATOS=INTENTOS=1
 
-    resultados = [(participante,puntos) for participante,puntos in resultados.items()] #lista de tuplas a partir de diccionario.
+    resultados = [(participante,puntos) for participante , puntos in resultados.items()] #lista de tuplas a partir de diccionario.
 
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
     numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
@@ -405,12 +413,46 @@ def ganador(resultados):
     for player in resultados:
         if numero_max == player[TUPLA_DATOS][PUNTOS]:
             contador +=1
+
     if contador>1:
         resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
-        print(f"El ganador de la partida es {resultados[0][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{resultados[0][TUPLA_DATOS][INTENTOS]}.")
+        for j in range (len(resultados)):
+            if j == 0:
+                fondo = "#EABE3F"
+            else: fondo = "#D5D8DC"
+
+            nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[j][NOMBRE]}",bg="#D5D8DC")
+            nombre_usuario.grid(row=1, column=0, padx = 10, pady =10)
+
+            puntos=Label(mi_frame, text=f"Cantidad de aciertos: {resultados[j][TUPLA_DATOS][PUNTOS]}",bg="#D5D8DC")
+            puntos.grid(row=1, column=1, padx = 10, pady =10)
+
+            intentos=Label(mi_frame, text=f"Cantidad de intentos: {resultados[j][TUPLA_DATOS][INTENTOS]}",bg="#D5D8DC")
+            intentos.grid(row=1, column=2, padx = 10, pady =10)
     else:
-        print(f"El ganador de la partida es {resultados[0][NOMBRE]}, con {numero_max} puntos totales.")
+        for i in range (len(resultados)):
+            if i == 0:
+                fondo = "#EABE3F"
+            else: fondo = "#D5D8DC"
+
+            nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[i][NOMBRE]}",bg=fondo)
+            nombre_usuario.grid(row=i, column=0, padx = 10, pady =10)
+
+            puntos=Label(mi_frame, text=f"Cantidad de aciertos: {resultados[i][TUPLA_DATOS][PUNTOS]}",bg=fondo)
+            puntos.grid(row=i, column=1, padx = 10, pady =10)
+
+            intentos=Label(mi_frame, text=f"Cantidad de intentos: {resultados[i][TUPLA_DATOS][INTENTOS]}",bg=fondo)
+            intentos.grid(row=i, column=2, padx = 10, pady =10)
+
+    def reiniciar():
+        raiz.destroy()
+        main()
+
+    boton_continuar=Button(mi_frame,text="Volver a jugar",command= lambda: reiniciar() ,bg="#24CA1C", fg="white",width="15", border=3)
+    boton_continuar.grid(row=len(resultados) + 1,column=0,padx = 10, pady =10)
     
+    boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: raiz.destroy(), bg="#24CA1C", fg="white",width="15", border=3)
+    boton_abandonar.grid(row=len(resultados) + 1,column=2,padx = 10, pady =10)
 
 def main():
     '''
@@ -420,8 +462,10 @@ def main():
     while seguir == "s":
         lista_nombres_usuarios = nombres_jugadores()
         diccionario = datos_jugadores(lista_nombres_usuarios)
-        lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
-        lista_cartas = ["A","A","B","B","C","C","D","D","E","E","F","F","G","G","H","H"]
+        #lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
+        #lista_cartas = ["A","A","B","B","C","C","D","D","E","E","F","F","G","G","H","H"]
+        lista_juego = [[1],[2]]
+        lista_cartas = ["A","A"]
         tiempo_inicial = time.time()
         resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
         tiempo_partida = time.time() - tiempo_inicial
@@ -430,8 +474,8 @@ def main():
         seguir = input("¿Seguir jugando?(s/n): ")
 #------------------------------------- Comienzo del juego -------------------------------------------#
 
-cartas = ['A','B','C','D','E','F','G','H']
-LISTA_VACIA = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
+cartas = ['A']
+LISTA_VACIA = [[1],[2]]
 
 
 main()
