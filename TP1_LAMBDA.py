@@ -1,4 +1,3 @@
-
 import random
 from tkinter import *
 import time
@@ -279,7 +278,7 @@ def nombres_jugadores():
                 jugadores.after(3000, lambda: jugadores.destroy())
             
             else: #Se destruye despues de 3 segundos si llega al maximo
-                maximos=Label(mi_frame, text="Maximo de jugadores alcanzado. \n El juago comenzara",fg="red")
+                maximos=Label(mi_frame, text="Maximo de jugadores alcanzado. \n El juego comenzara",fg="red")
                 maximos.grid(row=5, column=0, padx = 10, pady =10)
                 maximos.after(4000, lambda: raiz.destroy())
         
@@ -389,7 +388,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
         contador_jugadas_totales += 1
     return diccionario 
 
-def ganador(resultados):
+def ganador(resultados, partidas):
     '''
     En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
     Creada por: Juan Pedro, Facundo Polech
@@ -410,17 +409,7 @@ def ganador(resultados):
 
     resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
 
-    for j in range (len(resultados)):
-        archivo = open("partidas.csv", "a")
-        archivo.write("Jugador:")
-        archivo.write(str(resultados[j][NOMBRE]))
-        archivo.write("; ")
-        archivo.write("Puntos:")
-        archivo.write(str(resultados[j][TUPLA_DATOS][PUNTOS]))
-        archivo.write("; ")
-        archivo.write("Intentos:")
-        archivo.write(str(resultados[j][TUPLA_DATOS][INTENTOS]))
-        archivo.write("\n")
+    escritura_nombre_puntos_intentos(resultados)
 
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
     numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
@@ -470,13 +459,68 @@ def ganador(resultados):
     boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: raiz.destroy(), bg="#24CA1C", fg="white",width="15", border=3)
     boton_abandonar.grid(row=len(resultados) + 1,column=2,padx = 10, pady =10)
 
+    validar_maximo_partidas(partidas, mi_frame, raiz) #Interfaz de control de partidas máximas
+
+def escritura_fecha_hora(fecha_de_partida, hora_de_finalizacion):
+    '''
+    Creada por: Milton Fernández
+    '''
+    archivo = open("partidas.csv", "a")
+    archivo.write("fecha_de_partida:")
+    archivo.write(fecha_de_partida)
+    archivo.write("; ")
+    archivo.write("Hora de finalizacion:")
+    archivo.write(hora_de_finalizacion)
+    archivo.write("\n")
+    archivo.write("----------------------")
+    archivo.write("\n")
+    
+def escritura_nombre_puntos_intentos(resultados):
+    NOMBRE=PUNTOS=0
+    TUPLA_DATOS=INTENTOS=1
+    for j in range (len(resultados)):
+        archivo = open("partidas.csv", "a")
+        archivo.write("Jugador:")
+        archivo.write(str(resultados[j][NOMBRE]))
+        archivo.write("; ")
+        archivo.write("Puntos:")
+        archivo.write(str(resultados[j][TUPLA_DATOS][PUNTOS]))
+        archivo.write("; ")
+        archivo.write("Intentos:")
+        archivo.write(str(resultados[j][TUPLA_DATOS][INTENTOS]))
+        archivo.write("\n")
+
+def validar_maximo_partidas(partidas, mi_frame, raiz):
+    
+    archivo = open('configuracion.csv', 'r')
+
+    linea = leerArchivo(archivo,',')
+
+    while linea[0] != 'MAXIMO_PARTIDAS' and linea:
+        linea = leerArchivo(archivo, ',')
+
+    if int(linea[1]) > partidas:
+        partidas=Label(mi_frame, text= 'Puede seguir \n jugando', fg="red")
+        partidas.grid(row=5, column=2, padx = 10, pady =10)
+        partidas.after(3000, lambda: partidas.destroy())
+
+    else:#si es igual a maximo de partidas (5)
+        maximos=Label(mi_frame, text="Maximo de partidas alcanzado. \n El juego se cerrará",fg="red")
+        maximos.grid(row=5, column=0, padx = 10, pady =10)
+        maximos.after(4000, lambda: raiz.destroy())
+        
+    archivo.close()
+
+
 def main():
     '''
     Creada por: Julieta Margenats
     '''
     fecha = datetime.datetime.now()
     seguir = "s"
+    partidas = 0
     while seguir == "s":
+        partidas += 1
         fecha_de_partida = fecha.strftime('%d/%m/%Y')
         lista_nombres_usuarios = nombres_jugadores()
         diccionario = datos_jugadores(lista_nombres_usuarios)
@@ -487,19 +531,10 @@ def main():
         tiempo_inicial = time.time()
         resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
         tiempo_partida = time.time() - tiempo_inicial
-        ganador(resultados)
+        ganador(resultados, partidas)
         hora_de_finalizacion = fecha.strftime('%H:%M:%S')
         print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
-
-        archivo = open("partidas.csv", "a")
-        archivo.write("fecha_de_partida:")
-        archivo.write(fecha_de_partida)
-        archivo.write("; ")
-        archivo.write("Hora de finalizacion:")
-        archivo.write(hora_de_finalizacion)
-        archivo.write("\n")
-        archivo.write("----------------------")
-        archivo.write("\n")
+        escritura_fecha_hora(fecha_de_partida, hora_de_finalizacion)
         seguir = input("¿Seguir jugando?(s/n): ")
 #------------------------------------- Comienzo del juego -------------------------------------------#
 
