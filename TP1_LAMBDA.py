@@ -558,19 +558,22 @@ def crear_listas_juego():
 
     lista_juego = []
     lista_cartas = []
+    LISTA_VACIA = []
     cantidad_de_letras = cantidad_de_fichas//2
     abecedario = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     abecedario_cortado = abecedario[0:cantidad_de_letras]
 
     for i in range (cantidad_de_fichas):
-        lista_juego.append(i+1)
+        lista_juego.append([i+1])
+        LISTA_VACIA.append([i+1])
     
     for j in abecedario_cortado:
-        lista_cartas.append(j)
-        lista_cartas.append(j)
+        lista_cartas.append([j])
+        lista_cartas.append([j])
     
-    return lista_juego, lista_cartas
+    return lista_juego, lista_cartas, LISTA_VACIA
     
+#------------------------------------- Comienzo del juego -------------------------------------------#
 
 def main():
     '''
@@ -581,7 +584,7 @@ def main():
     while seguir == 's':
         lista_nombres_usuarios = nombres_jugadores()
         diccionario = datos_jugadores(lista_nombres_usuarios)
-        lista_juego, lista_cartas = crear_listas_juego()
+        lista_juego, lista_cartas, LISTA_VACIA = crear_listas_juego()
         tiempo_inicial = time.time()
         resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
         tiempo_partida = time.time() - tiempo_inicial
@@ -589,10 +592,5 @@ def main():
         print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
         escritura_fecha_hora()
         seguir = input("¿Seguir jugando?(s/n): ")
-#------------------------------------- Comienzo del juego -------------------------------------------#
-
-cartas = ['A']
-LISTA_VACIA = [[1],[2]]
-
 
 main()
