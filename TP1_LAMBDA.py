@@ -407,10 +407,6 @@ def ganador(resultados, partidas):
 
     resultados = [(participante,puntos) for participante , puntos in resultados.items()] #lista de tuplas a partir de diccionario.
 
-    resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
-
-    escritura_nombre_puntos_intentos(resultados)
-
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
     numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
     contador = 0
@@ -449,22 +445,38 @@ def ganador(resultados, partidas):
             intentos=Label(mi_frame, text=f"Cantidad de intentos: {resultados[i][TUPLA_DATOS][INTENTOS]}",bg=fondo)
             intentos.grid(row=i, column=2, padx = 10, pady =10)
 
-    def reiniciar():
+    '''
+    def reiniciar(partidas):
+        Creada por Milton Fernández
+        partidas += 1
         raiz.destroy()
-        main()
-
-    boton_continuar=Button(mi_frame,text="Volver a jugar",command= lambda: reiniciar() ,bg="#24CA1C", fg="white",width="15", border=3)
+        if partidas <=5:
+            main()
+        else:
+            quit()
+    '''
+    boton_continuar=Button(mi_frame,text="Volver a jugar", bg="#24CA1C", fg="white",width="15", border=3)
     boton_continuar.grid(row=len(resultados) + 1,column=0,padx = 10, pady =10)
     
-    boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: raiz.destroy(), bg="#24CA1C", fg="white",width="15", border=3)
+    boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: quit(), bg="#24CA1C", fg="white",width="15", border=3)
     boton_abandonar.grid(row=len(resultados) + 1,column=2,padx = 10, pady =10)
+    
+    #--------------------------------------- Partidas.csv ---------------------------------------------#
 
-    validar_maximo_partidas(partidas, mi_frame, raiz) #Interfaz de control de partidas máximas
+    reiniciar_archivo_partidas() #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
 
-def escritura_fecha_hora(fecha_de_partida, hora_de_finalizacion):
+    validar_maximo_partidas(partidas, mi_frame, raiz) #Interfaz de control de partidas máximas  
+
+    resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
+    escritura_nombre_puntos_intentos(resultados) #Escribe los datos en Partidas.csv
+
+def escritura_fecha_hora():
     '''
     Creada por: Milton Fernández
     '''
+    fecha = datetime.datetime.now()
+    fecha_de_partida = fecha.strftime('%d/%m/%Y')
+    hora_de_finalizacion = fecha.strftime('%H:%M:%S')
     archivo = open("partidas.csv", "a")
     archivo.write("fecha_de_partida:")
     archivo.write(fecha_de_partida)
@@ -490,6 +502,24 @@ def escritura_nombre_puntos_intentos(resultados):
         archivo.write(str(resultados[j][TUPLA_DATOS][INTENTOS]))
         archivo.write("\n")
 
+def reiniciar_archivo_partidas():
+    '''
+    Creada por: Milton Fernández
+    '''
+    archivo = open('configuracion.csv', 'r')
+
+    linea = leerArchivo(archivo,',')
+
+    while linea[0] != 'REINICIAR_ARCHIV0_PARTIDAS' and linea:
+        linea = leerArchivo(archivo, ',')
+
+    if str(linea[1]) == 'False':
+        pass
+
+    else:#si es diferente de False
+        os.remove('partidas.csv')
+    archivo.close()
+
 def validar_maximo_partidas(partidas, mi_frame, raiz):
     
     archivo = open('configuracion.csv', 'r')
@@ -511,30 +541,53 @@ def validar_maximo_partidas(partidas, mi_frame, raiz):
         
     archivo.close()
 
+def crear_listas_juego():
+    '''
+    Creada por: Milton Fernández
+    '''
+    archivo = open('configuracion.csv', 'r')
+
+    linea = leerArchivo(archivo,',')
+
+    while linea[0] != 'CANTIDAD_FICHAS' and linea:
+        linea = leerArchivo(archivo, ',')
+
+    cantidad_de_fichas = int(linea[1])
+        
+    archivo.close()
+
+    lista_juego = []
+    lista_cartas = []
+    cantidad_de_letras = cantidad_de_fichas//2
+    abecedario = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    abecedario_cortado = abecedario[0:cantidad_de_letras]
+
+    for i in range (cantidad_de_fichas):
+        lista_juego.append(i+1)
+    
+    for j in abecedario_cortado:
+        lista_cartas.append(j)
+        lista_cartas.append(j)
+    
+    return lista_juego, lista_cartas
+    
 
 def main():
     '''
     Creada por: Julieta Margenats
     '''
-    fecha = datetime.datetime.now()
-    seguir = "s"
+    seguir = 's'
     partidas = 0
-    while seguir == "s":
-        partidas += 1
-        fecha_de_partida = fecha.strftime('%d/%m/%Y')
+    while seguir == 's':
         lista_nombres_usuarios = nombres_jugadores()
         diccionario = datos_jugadores(lista_nombres_usuarios)
-        #lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
-        #lista_cartas = ["A","A","B","B","C","C","D","D","E","E","F","F","G","G","H","H"]
-        lista_juego = [[1],[2]]
-        lista_cartas = ["A","A"]
+        lista_juego, lista_cartas = crear_listas_juego()
         tiempo_inicial = time.time()
         resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
         tiempo_partida = time.time() - tiempo_inicial
         ganador(resultados, partidas)
-        hora_de_finalizacion = fecha.strftime('%H:%M:%S')
         print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
-        escritura_fecha_hora(fecha_de_partida, hora_de_finalizacion)
+        escritura_fecha_hora()
         seguir = input("¿Seguir jugando?(s/n): ")
 #------------------------------------- Comienzo del juego -------------------------------------------#
 
