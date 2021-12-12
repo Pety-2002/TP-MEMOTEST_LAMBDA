@@ -157,7 +157,7 @@ def registro():
         nombre_valido=validar_nombre_usuario(nombre)
         if (contraseña_repetida==contraseña) and nombre_valido :
             
-            archivo_usuarios=open("registro_usuarios.txt","r+")
+            archivo_usuarios=open("registro_usuarios.csv","r+")
             se_encuentra=validar_registracion(archivo_usuarios,nombre, contraseña)
             contraseña_valida=validar_contraseña_usuario(contraseña)
             
