@@ -1,8 +1,11 @@
-
+from hoja_validaciones import * 
+from hoja_interfaces import *
 import random
 from tkinter import *
 import time
 import os
+import datetime
+
 
 def mezclar(lista):
     '''
@@ -13,14 +16,12 @@ def mezclar(lista):
     random.shuffle(lista_mezclada)
     return lista_mezclada
 
-def validar_ingreso(numero,lista_cartas,lista_juego):
-    '''
-    Validar que el ingreso no sea una valor fuera de rango/no se encuentre disponible/no sea un numero/no sea una ficha ya tomada.
-    Creada por: Facundo Polech
-    '''
-    while not numero.isdigit() or int(numero)<=0 or int(numero)>len(lista_cartas) or lista_juego[int(numero)-1] == '[*]' or lista_juego[int(numero)-1] in lista_cartas:
-        numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada EXISTENTE en el tablero: ")
-    return int(numero)
+def agregar_linea(archivo,linea):
+    """
+    Agrega el nombre y contraseña del usuario al archivo
+    Creada Por: Yennyfer Garcia
+    """
+    archivo.write(linea + "\n")
 
 def imprimir_tablero(lista_juego):
     '''
@@ -30,77 +31,39 @@ def imprimir_tablero(lista_juego):
     for contador in range(0,len(lista_juego),4):
         print(lista_juego[contador:4+contador])
 
-def leerArchivo(archivo, default):
+def guardar_usuarios(nombre, contraseña, contraseña_repetida, frame):
     """
-    Devuelve las lineas del archivo
+    Agrega a los usuarios al archivo
     Creada Por: Yennyfer Garcia
     """
-    linea = archivo.readline()
-    return linea.rstrip().split(',') if linea else default.split(',')
-
-def agregar_linea(archivo,linea):
-    """
-    Agrega el nombre y contraseña del usuario al archivo
-    Creada Por: Yennyfer Garcia
-    """
-    archivo.write(linea + "\n")
-
-def validar_registracion(archivo,nombre,contraseña):
-    """
-    Valida si el usuario se encuentra en el archivo
-    Creada Por: Yennyfer Garcia
-    """
-    end="99999"
-    linea_1=leerArchivo(archivo,end)
-    se_encuentra=False
-    while linea_1[0]!=end and se_encuentra==False:
-        if linea_1[0]==nombre and linea_1[1]==contraseña:
-            se_encuentra=True
-        linea_1=leerArchivo(archivo,end)
-    return se_encuentra
-
-def validar_nombre_usuario(nombre_usuario):
-    """
-    Valida que el nombre del usuario cumpla con las caracteristicas requeridas
-    Creada por: Yennyfer Garcia
-    """
-    valida=False
-    guion_bajo=nombre_usuario.find("_")
-    if (4<=len(nombre_usuario)<=15) and (nombre_usuario.isalpha()== False) and (nombre_usuario.isnumeric()==False) and (guion_bajo!=-1):
-        valida=True
-    return valida
-
-def validar_contraseña_usuario(contraseña):
-    valida=False
-    alfanumerico= (contraseña.isalpha()==False) and (contraseña.isnumeric()==False)
-    i=j=k=l=0
-    if (8<=len(contraseña)<=12) and alfanumerico  :
-        invalido=False
-        mayuscula=False
-        minuscula=False
-        guiones=False
-        caracteres_invalidos='áéíóúÁÉÍÓÚ'
-        #----------OPTIMIZAR-----------------
-        while (guiones==False) and i<len(contraseña):
-            if contraseña[i] == "-" or contraseña[i] == "_" : guiones=True
-            i+=1
-
-        while (invalido==False) and j<len(contraseña):
-            if contraseña[j] in caracteres_invalidos: invalido=True
-            j+=1
+    mensaje=StringVar()
+    mensaje_validacion=Label(frame,textvariable=mensaje)
+    mensaje_validacion.grid(row=4,column=0, columnspan=2 ,padx = 10, pady =10)
+    mensaje_validacion.config(bg="#D5D8DC",fg="red")
     
-        while (mayuscula==False) and k<len(contraseña):
-            if contraseña[k].isupper():mayuscula=True
-            k+=1
+
+    nombre_valido=validar_nombre_usuario(nombre)
+    if (contraseña_repetida==contraseña) and nombre_valido :
         
-        while (minuscula==False) and l<len(contraseña):
-            if contraseña[l].islower(): minuscula=True
-            l+=1
-        #--------------------------------------
-        if guiones and (invalido==False) and mayuscula and minuscula:
-            valida=True
-    
-    return valida
+        archivo_usuarios=open("registro_usuarios.csv","r+")
+        se_encuentra=validar_registracion(archivo_usuarios,nombre, contraseña)
+        contraseña_valida=validar_contraseña_usuario(contraseña)
+
+        if se_encuentra:
+            mensaje.set("Ya se encuentra registrado")       
+        elif contraseña_valida==False:
+            mensaje.set("La contraseña debe contener: Entre 8 y 12 caracteres,\n una letra mayuscula, una letra minuscula (sin acentos)\ny tener un guion (bajo o medio)")
+        else:
+            linea=(f"{nombre},{contraseña}")
+            agregar_linea(archivo_usuarios,linea)
+            mensaje.set("Se ha registrado exitosamente")
+        archivo_usuarios.close()
+    else:
+        mensaje.set("alguno de los datos ingresados \n son invalidos")
+
+def inicio(raiz):
+    raiz.destroy()
+    main()
 
 def registro():
     """
@@ -115,8 +78,7 @@ def registro():
     mi_frame=Frame(raiz)
     mi_frame.pack()
     mi_frame.config(bg="#D5D8DC")
-
-
+    
     #---------- Labels ------------------
 
     nombre_usuario=Label(mi_frame, text="Nombre Usuario",bg="#D5D8DC")
@@ -125,8 +87,8 @@ def registro():
     contraseña_usuario1=Label(mi_frame, text="Contraseña",bg="#D5D8DC")
     contraseña_usuario1.grid(row=2, column=0, padx = 10, pady =10)
     
-    nombre_usuario2=Label(mi_frame, text="Repetir Contraseña",bg="#D5D8DC")
-    nombre_usuario2.grid(row=3, column=0, padx = 10, pady =10)
+    contraseña_usuario2=Label(mi_frame, text="Repetir Contraseña",bg="#D5D8DC")
+    contraseña_usuario2.grid(row=3, column=0, padx = 10, pady =10)
 
     #---------- Entry-------------------------
     
@@ -141,52 +103,13 @@ def registro():
     contraseña_repetida=Entry(mi_frame,  border="3")
     contraseña_repetida.grid(row=3,column=1,padx = 10, pady =10)
     contraseña_repetida.config(show="*")
-
-
-    mensaje=StringVar()
-    mensaje_validacion=Label(mi_frame,textvariable=mensaje)
-    mensaje_validacion.grid(row=4,column=0, columnspan=2 ,padx = 10, pady =10)
-    mensaje_validacion.config(bg="#D5D8DC",fg="red")
-
-    
-    def guardar_usuarios(nombre, contraseña, contraseña_repetida):
-        """
-        Agrega a los usuarios al archivo
-        Creada Por: Yennyfer Garcia
-        """
-        nombre_valido=validar_nombre_usuario(nombre)
-        if (contraseña_repetida==contraseña) and nombre_valido :
-            
-            archivo_usuarios=open("registro_usuarios.csv","r+")
-            se_encuentra=validar_registracion(archivo_usuarios,nombre, contraseña)
-            contraseña_valida=validar_contraseña_usuario(contraseña)
-            
-            if se_encuentra:
-                mensaje.set("Usted ya se encuentra registrado")
-            elif contraseña_valida==False:
-                mensaje.set("La contraseña debe contener: Entre 8 y 12 caracteres,\n una letra mayuscula, una letra minuscula (sin acentos)\ny tener un guion (bajo o medio)")
-            else:
-                linea=(f"{nombre},{contraseña}")
-                agregar_linea(archivo_usuarios,linea)
-                mensaje.set("Se ha registrado exitosamente")
-                #time.sleep(1.5)
-                #raiz.destroy()
-            archivo_usuarios.close()
-        else:
-            mensaje.set("alguno de los datos ingresados \n es invalido")
-        
-    def inicio():
-        raiz.destroy()
-        main()
-        
-
                 
-    #----------Boton---------------------------
+    #----------Botones---------------------------
 
-    boton_crear_ususario=Button(mi_frame,text="Crear Usuario",command= lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get()) ,bg="#24CA1C", fg="white",width="15", border=3)
+    boton_crear_ususario=Button(mi_frame,text="Crear Usuario",command= lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get(),mi_frame) ,bg="#24CA1C", fg="white",width="15", border=3)
     boton_crear_ususario.grid(row=5,column=0,padx = 10, pady =10)
     
-    boton_volver_inicio=Button(mi_frame,text="Volver inicio",command= lambda: inicio(),bg="#24CA1C", fg="white",width="15", border=3)
+    boton_volver_inicio=Button(mi_frame,text="Volver inicio",command= lambda: inicio(raiz),bg="#24CA1C", fg="white",width="15", border=3)
     boton_volver_inicio.grid(row=5,column=1,padx = 10, pady =10)
 
 
@@ -194,89 +117,103 @@ def registro():
 
 def nombres_jugadores():
     """
-    Crea la interfaz para solicitar el nombre de los jugadores 
+    CREA LA INTERFAZ para solicitar el nombre de los jugadores 
     Creada por: Milton Fernandez, Yennyfer Garcia.
     """
     raiz = Tk()
     lista = []
     raiz.title("Ingreso Usuarios")
     raiz.config(bg="#D5D8DC")
-    raiz.geometry('350x260')
+    raiz.geometry('460x250')
     mi_frame=Frame(raiz)
     mi_frame.pack()
     mi_frame.config(bg="#D5D8DC")
 
-    #----------------------- Labels ---------------------#
-    nombre_usuario1=Label(mi_frame, text="Nombre Usuario 1",bg="#D5D8DC")
-    nombre_usuario1.grid(row=1, column=0, padx = 10, pady =10)
-
-    contraseña_usuario1=Label(mi_frame, text="Contraseña Usuario 1",bg="#D5D8DC")
-    contraseña_usuario1.grid(row=2, column=0, padx = 10, pady =10)
     
-    nombre_usuario2=Label(mi_frame, text="Nombre Usuario 2",bg="#D5D8DC")
-    nombre_usuario2.grid(row=3, column=0, padx = 10, pady =10)
+    #----------------------- Labels ---------------------#
+    raiz.contador = 1 #variable is stored in the root object
 
-    contraseña_usuario2=Label(mi_frame, text="Contraseña Usuario 2",bg="#D5D8DC")
-    contraseña_usuario2.grid(row=4, column=0, padx = 10, pady =10)
+    users_label = StringVar()
+    users_label.set(f'Nombre usuario {raiz.contador}:')
+
+    contra_label = StringVar()
+    contra_label.set(f'Contraseña usuario {raiz.contador}:')   
+
+    nombre_usuario=Label(mi_frame, textvariable = users_label,bg="#D5D8DC")
+    nombre_usuario.grid(row=1, column=0, padx = 10, pady =10)
+
+    contraseña_usuario=Label(mi_frame, textvariable = contra_label,bg="#D5D8DC")
+    contraseña_usuario.grid(row=2, column=0, padx = 10, pady =10)
 
     #---------------- Entradas de texto -----------------#
-    cuadro_nombre1=Entry(mi_frame, border="3")
-    cuadro_nombre1.grid(row=1,column=1,padx = 10, pady =10)
 
-    cuadro_contraseña1=Entry(mi_frame ,border="3")
-    cuadro_contraseña1.grid(row=2,column=1,padx = 10, pady =10)
-    cuadro_contraseña1.config(show="*")
+    cuadro_nombre=Entry(mi_frame, border="3")
+    cuadro_nombre.grid(row=1,column=1,padx = 10, pady =10)
 
-    cuadro_nombre2=Entry(mi_frame,  border="3")
-    cuadro_nombre2.grid(row=3,column=1,padx = 10, pady =10)
-
-    cuadro_contraseña2=Entry(mi_frame,  border="3")
-    cuadro_contraseña2.grid(row=4,column=1,padx = 10, pady =10)
-    cuadro_contraseña2.config(show="*")
-
-    """
-    Nota: 
-
-    1. Verificar que ambos usuarios esten en el archivo de lo contrario insertar aviso de registro
-    2. Verificar que las contraseñas ingresadas sean las Correctas si no lo son avisar cual es la incorrecta
-    3. Ejecutar el juego
-
-
-    """
+    cuadro_contraseña=Entry(mi_frame ,border="3")
+    cuadro_contraseña.grid(row=2,column=1,padx = 10, pady =10)
+    cuadro_contraseña.config(show="*")
 
     def obtener_nombres():
         '''
-        Chequea que se hayan ingresado ambos nombres de los jugadores.
-        Creada por: Julieta Margenats
+        Guarda el nombre del jugador en una lista, luego de conocer que ya esta registrado. En caso contrario, avisa al participante que
+        se registre primero.
+        Creada por: Julieta Margenats, Juan Pedro Demarco.
         '''
-        archivo=open("registro_usuarios.txt","r")
-        se_encuentra_jugador_1=validar_registracion(archivo,cuadro_nombre1.get(), cuadro_contraseña1.get())
+        archivo = open('registro_usuarios.csv',"r")
+        se_encuentra_jugador = validar_registracion(archivo,cuadro_nombre.get(), cuadro_contraseña.get())
         archivo.close()
 
-        #REVISAR-Repito este paso de forma provisoria, al adaptar la interfaz para mas usuarios hacer el registro de forma individual
-        archivo_2=open("registro_usuarios.txt","r")
-        se_encuentra_jugador_2=validar_registracion(archivo_2,cuadro_nombre2.get(), cuadro_contraseña2.get())
-        archivo_2.close()
+        if se_encuentra_jugador:
+            lista.append(cuadro_nombre.get()) #Los usuarios que se encuentran registrados se van sumando a la lista de jugadores.
+            #verificacion el maximo de jugadores
+            ar_config = open('configuracion.csv', 'r')
+            maximo_jugadores = validar_maximo_jugadores(ar_config, len(lista))
+            ar_config.close()
 
-        if se_encuentra_jugador_1 and se_encuentra_jugador_2:
-            lista.append(cuadro_nombre1.get()), lista.append(cuadro_nombre2.get())
-            raiz.destroy()
+            if maximo_jugadores:
+                raiz.contador +=1
+                jugadores=Label(mi_frame, text= 'Puede seguir \n ingresando usuarios', fg="red")
+                jugadores.grid(row=5, column=2, padx = 10, pady =10)
+                jugadores.after(3000, lambda: jugadores.destroy())
+            
+            else: #Se destruye despues de 3 segundos si llega al maximo
+                maximos=Label(mi_frame, text="Maximo de jugadores alcanzado. \n El juego comenzara",fg="red")
+                maximos.grid(row=5, column=0, padx = 10, pady =10)
+                maximos.after(4000, lambda: raiz.destroy())
         
-        else: 
-            usuarios=Label(mi_frame, text="Por favor registrese",fg="red")
-            usuarios.grid(row=5, column=0, padx = 10, pady =10)
+        else:
+            advertencia=Label(mi_frame, text="Por favor, registrese primero.",fg="red")
+            advertencia.grid(row=5, column=0, padx = 10, pady =10)
+            advertencia.after(4000, lambda: advertencia.destroy())
         
+
+    def agregar_jugador():
+        '''
+        Funcion que se llama cada vez que queremos agregar un jugador. Actualiza la interfaz en el proceso. Se verifica que el jugador 
+        este registrado anteriormente.
+        Creada por: Juan Pedro Demarco.
+        '''
+        obtener_nombres()
+        users_label.set(f'Nombre usuario {raiz.contador}:')
+        contra_label.set(f'Contraseña usuario {raiz.contador}:')
+        cuadro_nombre.delete(0, END)
+        cuadro_contraseña.delete(0, END)
+
 
     def interfaz_registro():
         raiz.destroy()
         registro()
 
     #------------------- Botón enviar ------------------#
-    boton_enviar=Button(mi_frame,text="Jugar", command = lambda: [obtener_nombres()],bg="#24CA1C", fg="white",width="15", border=3)
-    boton_enviar.grid(row=6,column=0,padx = 10, pady =10)
+    boton_agregar_jugador=Button(mi_frame,text="Agregar jugador",command = lambda: agregar_jugador(),bg="#2DBCF1", fg="white",width="15", border=3)
+    boton_agregar_jugador.grid(row=6,column=1,padx = 10, pady =10)
 
     boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(),bg="#2DBCF1", fg="white",width="15", border=3)
-    boton_registro.grid(row=6,column=1,padx = 10, pady =10)
+    boton_registro.grid(row=6,column=2,padx = 10, pady =10)
+
+    boton_enviar=Button(mi_frame,text="Jugar", command = lambda: raiz.destroy(),bg="#24CA1C", fg="white",width="15", border=3)
+    boton_enviar.grid(row=6,column=0,padx = 10, pady =10)
 
 
     raiz.mainloop() 
@@ -302,7 +239,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
     CANT_PUNTOS=0
     CANT_INTENTOS=1 
 
-    lista_cartas= mezclar(lista_cartas)
+    #lista_cartas= mezclar(lista_cartas)
     
     diccionario = datos_jugadores[0] #divido mi tupla en diccionario y nombre de usuarios.
     lista_participantes = datos_jugadores[1]
@@ -351,37 +288,25 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
         contador_jugadas_totales += 1
     return diccionario 
 
-def ganador(resultados):
+def ganador(resultados, partidas):
     '''
     En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
     Creada por: Juan Pedro, Facundo Polech
+    Interfaz y archivo partidas: Milton Fernández
     '''
+    raiz = Tk()
+    raiz.title("Registro Usuarios")
+    raiz.config(bg="#D5D8DC")
+    raiz.geometry('700x250')
+    mi_frame=Frame(raiz)
+    mi_frame.pack()
+    mi_frame.config(bg="#D5D8DC")
+
     NOMBRE=PUNTOS=0
     TUPLA_DATOS=INTENTOS=1
 
-    resultados = [(participante,puntos) for participante,puntos in resultados.items()] #lista de tuplas a partir de diccionario.
+    resultados = [(participante,puntos) for participante , puntos in resultados.items()] #lista de tuplas a partir de diccionario.
 
-    PUNTOS_JUGADOR_1 = resultados[0][TUPLA_DATOS][PUNTOS]
-    PUNTOS_JUGADOR_2 = resultados[1][TUPLA_DATOS][PUNTOS]
-    INTENTOS_JUGADOR_1 = resultados[0][TUPLA_DATOS][INTENTOS]
-    INTENTOS_JUGADOR_2 = resultados[1][TUPLA_DATOS][INTENTOS]
-
-    if PUNTOS_JUGADOR_1 > PUNTOS_JUGADOR_2:
-        print(f"El ganador de la partida es {resultados[0][NOMBRE]}, con {PUNTOS_JUGADOR_1} puntos totales.")
-
-    elif PUNTOS_JUGADOR_1 < PUNTOS_JUGADOR_2:
-        print(f"El ganador de la partida es {resultados[1][NOMBRE]}, con {PUNTOS_JUGADOR_2} puntos totales.")
-
-    #en caso de empate, considero ganador al jugador con menos intentos.
-    elif INTENTOS_JUGADOR_1 < INTENTOS_JUGADOR_2:
-        print(f"El ganador de la partida es {resultados[0][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{INTENTOS_JUGADOR_1}.")
-
-    elif INTENTOS_JUGADOR_1 > INTENTOS_JUGADOR_2:
-        print(f"El ganador de la partida es {resultados[1][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{INTENTOS_JUGADOR_2}.")
-    
-    '''
-    Si quiero desarrollar un MEMOTEST con mas de dos jugadores, utilizar esto.
-    resultados = [(participante,puntos) for participante,puntos in resultados.items()] #lista de tuplas a partir de diccionario.
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
     numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
     contador = 0
@@ -389,33 +314,174 @@ def ganador(resultados):
     for player in resultados:
         if numero_max == player[TUPLA_DATOS][PUNTOS]:
             contador +=1
+
     if contador>1:
         resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
-        print(f"El ganador de la partida es {resultados[0][NOMBRE]}, por caso de empate y con una menor cantidad de intentos de valor:{resultados[0][TUPLA_DATOS][INTENTOS]}.")
+        for j in range (len(resultados)):
+            if j == 0:
+                fondo = "#EABE3F"
+            else: fondo = "#D5D8DC"
+
+            nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[j][NOMBRE]}",bg=fondo)
+            nombre_usuario.grid(row=j, column=0, padx = 10, pady =10)
+                
+            puntos=Label(mi_frame, text=f"Cantidad de aciertos: {resultados[j][TUPLA_DATOS][PUNTOS]}",bg=fondo)
+            puntos.grid(row=j, column=1, padx = 10, pady =10)
+
+            intentos=Label(mi_frame, text=f"Cantidad de intentos: {resultados[j][TUPLA_DATOS][INTENTOS]}",bg=fondo)
+            intentos.grid(row=j, column=2, padx = 10, pady =10)
+
+            promedio_intentos=Label(mi_frame, text=f"Cantidad promedio de intentos: {resultados[j][TUPLA_DATOS][INTENTOS]/len(resultados)}",bg=fondo)
+            promedio_intentos.grid(row=j, column=3, padx = 10, pady =10)
+
     else:
-        print(f"El ganador de la partida es {resultados[0][NOMBRE]}, con {numero_max} puntos totales.")
+        for i in range (len(resultados)):
+            if i == 0:
+                fondo = "#EABE3F"
+            else: fondo = "#D5D8DC"
+
+            nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[i][NOMBRE]}",bg=fondo)
+            nombre_usuario.grid(row=i, column=0, padx = 10, pady =10)
+
+            puntos=Label(mi_frame, text=f"Cantidad de aciertos: {resultados[i][TUPLA_DATOS][PUNTOS]}",bg=fondo)
+            puntos.grid(row=i, column=1, padx = 10, pady =10)
+
+            intentos=Label(mi_frame, text=f"Cantidad de intentos: {resultados[i][TUPLA_DATOS][INTENTOS]}",bg=fondo)
+            intentos.grid(row=i, column=2, padx = 10, pady =10)
+
+            promedio_intentos=Label(mi_frame, text=f"Cantidad promedio de intentos: {resultados[i][TUPLA_DATOS][INTENTOS]/len(resultados)}",bg=fondo)
+            promedio_intentos.grid(row=i, column=3, padx = 10, pady =10)
+
     '''
+    def reiniciar(partidas):
+        Creada por Milton Fernández
+        partidas += 1
+        raiz.destroy()
+        if partidas <=5:
+            main()
+        else:
+            quit()
+    '''
+    boton_continuar=Button(mi_frame,text="Volver a jugar", bg="#24CA1C", fg="white",width="15", border=3)
+    boton_continuar.grid(row=len(resultados) + 1,column=1,padx = 10, pady =10)
+    
+    boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: quit(), bg="#24CA1C", fg="white",width="15", border=3)
+    boton_abandonar.grid(row=len(resultados) + 1,column=2,padx = 10, pady =10)
+    
+    #--------------------------------------- Partidas.csv ---------------------------------------------#
+
+    reiniciar_archivo_partidas() #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
+
+    validar_maximo_partidas(partidas, mi_frame, raiz) #Interfaz de control de partidas máximas  
+
+    resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
+    escritura_nombre_puntos_intentos(resultados) #Escribe los datos en Partidas.csv
+
+def crear_listas_juego():
+    '''
+    Creada por: Milton Fernández
+    '''
+    archivo = open('configuracion.csv', 'r')
+
+    linea = leerArchivo(archivo,',')
+
+    while linea[0] != 'CANTIDAD_FICHAS' and linea:
+        linea = leerArchivo(archivo, ',')
+
+    cantidad_de_fichas = int(linea[1])
+        
+    archivo.close()
+
+    lista_juego = []
+    lista_cartas = []
+    LISTA_VACIA = []
+    cantidad_de_letras = cantidad_de_fichas//2
+    abecedario = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    abecedario_cortado = abecedario[0:cantidad_de_letras]
+
+    for i in range (cantidad_de_fichas):
+        lista_juego.append([i+1])
+        LISTA_VACIA.append([i+1])
+    
+    for j in abecedario_cortado:
+        lista_cartas.append([j])
+        lista_cartas.append([j])
+    
+    return lista_juego, lista_cartas, LISTA_VACIA
+
+#---------------Modificacion partidas_file -----------#   
+def escritura_fecha_hora():
+    '''
+    Creada por: Milton Fernández
+    '''
+    fecha = datetime.datetime.now()
+    fecha_de_partida = fecha.strftime('%d/%m/%Y')
+    hora_de_finalizacion = fecha.strftime('%H:%M:%S')
+    archivo = open("partidas.csv", "a")
+    archivo.write("fecha_de_partida:")
+    archivo.write(fecha_de_partida)
+    archivo.write("; ")
+    archivo.write("Hora de finalizacion:")
+    archivo.write(hora_de_finalizacion)
+    archivo.write("\n")
+    archivo.write("----------------------")
+    archivo.write("\n")
+
+def escritura_nombre_puntos_intentos(resultados):
+    NOMBRE=PUNTOS=0
+    TUPLA_DATOS=INTENTOS=1
+    for j in range (len(resultados)):
+        archivo = open("partidas.csv", "a")
+        fecha = datetime.datetime.now()
+        fecha_de_partida = fecha.strftime('%d/%m/%Y')
+        hora_de_finalizacion = fecha.strftime('%H:%M:%S')
+        archivo.write(fecha_de_partida)
+        archivo.write(",")
+        archivo.write(hora_de_finalizacion)
+        archivo.write(",")
+        archivo.write(str(resultados[j][NOMBRE]))
+        archivo.write(",")
+        archivo.write(str(resultados[j][TUPLA_DATOS][PUNTOS]))
+        archivo.write(",")
+        archivo.write(str(resultados[j][TUPLA_DATOS][INTENTOS]))
+        archivo.write(",")
+        archivo.write(str(resultados[j][TUPLA_DATOS][INTENTOS]//len(resultados)))
+        archivo.write("\n")
+
+def reiniciar_archivo_partidas():
+    '''
+    Creada por: Milton Fernández
+    '''
+    archivo = open('configuracion.csv', 'r')
+
+    linea = leerArchivo(archivo,',')
+
+    while linea[0] != 'REINICIAR_ARCHIV0_PARTIDAS' and linea:
+        linea = leerArchivo(archivo, ',')
+
+    if str(linea[1]) == 'False':
+        pass
+
+    else:#si es diferente de False
+        os.remove('partidas.csv')
+    archivo.close()
 
 def main():
     '''
     Creada por: Julieta Margenats
     '''
-    seguir = "s"
-    while seguir == "s":
+    seguir = 's'
+    partidas = 0
+    while seguir == 's':
         lista_nombres_usuarios = nombres_jugadores()
         diccionario = datos_jugadores(lista_nombres_usuarios)
-        lista_juego = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
-        lista_cartas = ["A","A","B","B","C","C","D","D","E","E","F","F","G","G","H","H"]
+        lista_juego, lista_cartas, LISTA_VACIA = crear_listas_juego()
+        tiempo_inicial = time.time()
         resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
-        ganador(resultados)
-        seguir= input("¿Seguir jugando?(s/n): ")
-#------------------------------------- Comienzo del juego -------------------------------------------#
+        tiempo_partida = time.time() - tiempo_inicial
+        ganador(resultados, partidas)
+        print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
+        #escritura_fecha_hora()
+        seguir = input("¿Seguir jugando?(s/n): ")
 
-cartas = ['A','B','C','D','E','F','G','H']
-LISTA_VACIA = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]]
-
-tiempo_inicial = time.time()
 main()
-tiempo_partida = time.time() - tiempo_inicial
-
-print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
