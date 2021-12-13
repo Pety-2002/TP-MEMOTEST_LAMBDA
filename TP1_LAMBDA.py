@@ -1,10 +1,11 @@
-from hoja_validaciones import * 
-from hoja_interfaces import *
-import random
-from tkinter import *
-import time
-import os
 import datetime
+import os
+import random
+import time
+from tkinter import *
+
+from hoja_interfaces import *
+from hoja_validaciones import *
 
 
 def mezclar(lista):
@@ -32,6 +33,10 @@ def imprimir_tablero(lista_juego):
     '''
     for contador in range(0,len(lista_juego),4):
         print(lista_juego[contador:4+contador])
+
+def inicio(raiz):
+    raiz.destroy()
+    main()
 
 def registro():
     """
@@ -71,21 +76,20 @@ def registro():
     contraseña_repetida=Entry(mi_frame,  border="3")
     contraseña_repetida.grid(row=3,column=1,padx = 10, pady =10)
     contraseña_repetida.config(show="*")
-
-
-    mensaje=StringVar()
-    mensaje_validacion=Label(mi_frame,textvariable=mensaje)
-    mensaje_validacion.grid(row=4,column=0, columnspan=2 ,padx = 10, pady =10)
-    mensaje_validacion.config(bg="#D5D8DC",fg="red")
-
-    
-    def guardar_usuarios(nombre, contraseña, contraseña_repetida):
+                
+    #----------Botones---------------------------
+    def guardar_usuarios(nombre, contraseña, contraseña_repetida,frame):
         """
         Agrega a los usuarios al archivo
         Creada Por: Yennyfer Garcia
         """
         nombre_valido=validar_nombre_usuario(nombre)
         contraseña_valida=validar_contraseña_usuario(contraseña)
+
+        mensaje=StringVar()
+        mensaje_validacion=Label(mi_frame,textvariable=mensaje)
+        mensaje_validacion.grid(row=4,column=0, columnspan=2 ,padx = 10, pady =10)
+        mensaje_validacion.config(bg="#D5D8DC",fg="red")
 
         if contraseña_valida and nombre_valido and contraseña == contraseña_repetida:
             
@@ -106,11 +110,6 @@ def registro():
 
         elif contraseña != contraseña_repetida:
             mensaje.set("Las contraseñas son distintas")
-    def inicio():
-        raiz.destroy()
-        main()
-                
-    #----------Botones---------------------------
 
     boton_crear_ususario=Button(mi_frame,text="Crear Usuario",command= lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get(),mi_frame) ,bg="#24CA1C", fg="white",width="15", border=3)
     boton_crear_ususario.grid(row=5,column=0,padx = 10, pady =10)
