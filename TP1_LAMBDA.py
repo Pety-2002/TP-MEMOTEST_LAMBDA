@@ -33,7 +33,7 @@ def imprimir_tablero(lista_juego):
     for contador in range(0,len(lista_juego),4):
         print(lista_juego[contador:4+contador])
 
-def registro():
+def registro(num_partidas):
     """
     Crea la interfaz de registro de los usuarios
     Creada Por: Yennyfer Garcia
@@ -106,22 +106,22 @@ def registro():
 
         elif contraseña != contraseña_repetida:
             mensaje.set("Las contraseñas son distintas")
-    def inicio():
+    def inicio(num_partidas):
         raiz.destroy()
-        main()
+        main(num_partidas)
                 
     #----------Botones---------------------------
 
-    boton_crear_ususario=Button(mi_frame,text="Crear Usuario",command= lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get(),mi_frame) ,bg="#24CA1C", fg="white",width="15", border=3)
+    boton_crear_ususario=Button(mi_frame,text="Crear Usuario",command = lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get()) ,bg="#24CA1C", fg="white",width="15", border=3)
     boton_crear_ususario.grid(row=5,column=0,padx = 10, pady =10)
     
-    boton_volver_inicio=Button(mi_frame,text="Volver inicio",command= lambda: inicio(raiz),bg="#24CA1C", fg="white",width="15", border=3)
+    boton_volver_inicio=Button(mi_frame,text="Volver inicio",command = lambda: inicio(num_partidas),bg="#24CA1C", fg="white",width="15", border=3)
     boton_volver_inicio.grid(row=5,column=1,padx = 10, pady =10)
 
     raiz.mainloop()
 
 
-def nombres_jugadores():
+def nombres_jugadores(num_partidas):
     """
     CREA LA INTERFAZ para solicitar el nombre de los jugadores 
     Creada por: Milton Fernandez, Yennyfer Garcia, Juan Pedro Demarco.
@@ -226,13 +226,14 @@ def nombres_jugadores():
         cuadro_contraseña.delete(0, END)
         boton_enviar["state"] = NORMAL
 
-    def interfaz_registro():
+    def interfaz_registro(num_partidas):
         '''
         Cierra la interfaz inicial y abre la interfaz de registro.
         Creada por: .
         '''
         raiz.destroy()
-        registro()
+        registro(num_partidas)
+        
 
     def turnos(lista,jugadores):
         '''
@@ -250,7 +251,7 @@ def nombres_jugadores():
     boton_agregar_jugador=Button(mi_frame,text="Agregar jugador",command = lambda: agregar_jugador(),bg="#2DBCF1", fg="white",width="15", border=3)
     boton_agregar_jugador.grid(row=6,column=1,padx = 10, pady =10)
 
-    boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(),bg="#2DBCF1", fg="white",width="15", border=3)
+    boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(num_partidas),bg="#2DBCF1", fg="white",width="15", border=3)
     boton_registro.grid(row=6,column=2,padx = 10, pady =10)
 
     boton_enviar=Button(mi_frame,text="Jugar!", command = lambda:turnos(lista,jugadores) ,bg="#24CA1C", fg="white",width="15", border=3)
@@ -329,7 +330,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
         contador_jugadas_totales += 1
     return diccionario 
 
-def ganador(resultados, partidas):
+def ganador(resultados, num_partidas):
     '''
     En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
     Creada por: Juan Pedro, Facundo Polech
@@ -394,15 +395,14 @@ def ganador(resultados, partidas):
             promedio_intentos=Label(mi_frame, text=f"Cantidad promedio de intentos: {resultados[i][TUPLA_DATOS][INTENTOS]/len(resultados)}",bg=fondo)
             promedio_intentos.grid(row=i, column=3, padx = 10, pady =10)
 
-    def reiniciar(partidas):
+    def reiniciar(num_partidas):
 
-        raiz.partidas += 1
         raiz.destroy()
     
-        main()
+        main(num_partidas)
 
     
-    boton_continuar=Button(mi_frame,text="Volver a jugar",command= lambda: reiniciar(partidas), bg="#24CA1C", fg="white",width="15", border=3)
+    boton_continuar=Button(mi_frame,text="Volver a jugar",command= lambda: reiniciar(num_partidas), bg="#24CA1C", fg="white",width="15", border=3)
     boton_continuar.grid(row=len(resultados) + 1,column=1,padx = 10, pady =10)
     
     boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: quit(), bg="#24CA1C", fg="white",width="15", border=3)
@@ -412,7 +412,7 @@ def ganador(resultados, partidas):
 
     reiniciar_archivo_partidas() #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
     
-    validar_maximo_partidas(raiz.partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
+    validar_maximo_partidas(num_partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
 
     resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
     escritura_nombre_puntos_intentos(resultados) #Escribe los datos en Partidas.csv
@@ -511,19 +511,20 @@ def reiniciar_archivo_partidas():
 
 #------------------------------------- Comienzo del juego -------------------------------------------#
 
-def main():
+def main(num_partidas):
     '''
     Creada por: Julieta Margenats
     '''
-    partidas = 0
-    lista_nombres_usuarios = nombres_jugadores() #ya me devuelve la lista desordenada
+    lista_nombres_usuarios = nombres_jugadores(num_partidas) #ya me devuelve la lista desordenada
     diccionario = datos_jugadores(lista_nombres_usuarios)
     lista_juego, lista_cartas, LISTA_VACIA = crear_listas_juego()
     tiempo_inicial = time.time()
     resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
     tiempo_partida = time.time() - tiempo_inicial
-    ganador(resultados, partidas)
+    num_partidas += 1
+    ganador(resultados, num_partidas)
     print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
     #escritura_fecha_hora()
-        
-main()
+
+num_partidas = 0        
+main(num_partidas)
