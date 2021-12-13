@@ -21,17 +21,19 @@ def leerArchivo(archivo, default):
     linea = archivo.readline()
     return linea.rstrip().split(',') if linea else default.split(',')
 
-def agregar_linea(archivo,linea):
+def agregar_linea(linea):
     """
     Agrega el nombre y contraseña del usuario al archivo
     Creada Por: Yennyfer Garcia
     """
+    archivo = open ("registro_usuarios.txt","r+")
     archivo.write(linea + "\n")
+    archivo.close()
 
 def imprimir_tablero(lista_juego):
     '''
     Imprimo el tablero. Creo slices de 4 para imprimir por linea 4 fichas.
-    Creada por: JuanP
+    Creada por: Juan Pedro Demarco
     '''
     for contador in range(0,len(lista_juego),4):
         print(lista_juego[contador:4+contador])
@@ -89,26 +91,27 @@ def registro():
         Creada Por: Yennyfer Garcia
         """
         nombre_valido=validar_nombre_usuario(nombre)
-        if (contraseña_repetida==contraseña) and nombre_valido :
+        contraseña_valida=validar_contraseña_usuario(contraseña)
+
+        if contraseña_valida and nombre_valido and contraseña == contraseña_repetida:
             
-            archivo_usuarios=open("registro_usuarios.txt","r+")
-            se_encuentra=validar_registracion(archivo_usuarios,nombre, contraseña)
-            contraseña_valida=validar_contraseña_usuario(contraseña)
+            usuario_existe=validar_registracion(nombre, contraseña)
             
-            if se_encuentra:
+            if usuario_existe[0]:
                 mensaje.set("Usted ya se encuentra registrado")
-            elif contraseña_valida==False:
-                mensaje.set("La contraseña debe contener: Entre 8 y 12 caracteres,\n una letra mayuscula, una letra minuscula (sin acentos)\ny tener un guion (bajo o medio)")
             else:
                 linea=(f"{nombre},{contraseña}")
-                agregar_linea(archivo_usuarios,linea)
+                agregar_linea(linea)
                 mensaje.set("Se ha registrado exitosamente")
-                #time.sleep(1.5)
-                #raiz.destroy()
-            archivo_usuarios.close()
-        else:
-            mensaje.set("alguno de los datos ingresados \n es invalido")
-        
+
+        elif contraseña_valida==False:
+                mensaje.set("La contraseña debe contener: Entre 8 y 12 caracteres,\n una letra mayuscula, una letra minuscula (sin acentos)\ny tener un guion (bajo o medio)")
+
+        elif nombre_valido == False:
+                mensaje.set("El nombre de usuario debe contener: Entre 4 y 15 caracteres,\n estar formado sólo por letras, números y el bajo guion.")
+
+        elif contraseña != contraseña_repetida:
+                mensaje.set("Las contraseñas son distintas")
     def inicio():
         raiz.destroy()
         main()
@@ -124,21 +127,13 @@ def registro():
 
     raiz.mainloop() 
 
-def leerArchivo(archivo, default):
-    """
-    Devuelve las lineas del archivo
-    Creada Por: Yennyfer Garcia
-    """
-    linea = archivo.readline()
-    return linea.rstrip().split(',') if linea else default.split(',')
-
 def nombres_jugadores():
     """
     CREA LA INTERFAZ para solicitar el nombre de los jugadores 
     Creada por: Milton Fernandez, Yennyfer Garcia.
     """
     raiz = Tk()
-    lista = []
+    lista = [] #guarda los nombres de los jugadores.
     raiz.title("Ingreso Usuarios")
     raiz.config(bg="#D5D8DC")
     raiz.geometry('460x250')
@@ -186,12 +181,14 @@ def nombres_jugadores():
         se registre primero.
         Creada por: Julieta Margenats, Juan Pedro Demarco.
         '''
-        archivo = open('registro_usuarios.txt',"r")
-        se_encuentra_jugador = validar_registracion(archivo,cuadro_nombre.get(), cuadro_contraseña.get())
-        archivo.close()
+        username=cuadro_nombre.get()
+        password = cuadro_contraseña.get()
 
-        if se_encuentra_jugador:
-            lista.append(cuadro_nombre.get()) #Los usuarios que se encuentran registrados se van sumando a la lista de jugadores.
+        usuario_existe = validar_registracion(username, password)
+
+        if usuario_existe[0]:#usuario y contraseña existen
+            lista.append(username) #Los usuarios que se encuentran registrados se van sumando a la lista de jugadores.
+
             #verificacion el maximo de jugadores
             ar_config = open('configuracion.csv', 'r')
             maximo_jugadores = validar_maximo_jugadores(ar_config, len(lista))
@@ -200,17 +197,22 @@ def nombres_jugadores():
             if maximo_jugadores:
                 raiz.contador +=1
                 jugadores=Label(mi_frame, text= 'Puede seguir \n ingresando usuarios', fg="red")
-                jugadores.grid(row=5, column=2, padx = 10, pady =10)
+                jugadores.grid(row=2, column=2, padx = 10, pady =10)
                 jugadores.after(3000, lambda: jugadores.destroy())
             
             else: #Se destruye despues de 3 segundos si llega al maximo
                 maximos=Label(mi_frame, text="Maximo de jugadores alcanzado. \n El juego comenzara",fg="red")
-                maximos.grid(row=5, column=0, padx = 10, pady =10)
+                maximos.grid(row=2, column=2, padx = 10, pady =10)
                 maximos.after(4000, lambda: raiz.destroy())
-        
+
+        elif usuario_existe[1]: #usuario existe pero la contraseña no es correcta
+            jugadores=Label(mi_frame, text= 'El usuario existe pero \n la contraseña no es correcta', fg="red")
+            jugadores.grid(row=2, column=2, padx = 10, pady =10)
+            jugadores.after(3000, lambda: jugadores.destroy())
+
         else:
-            advertencia=Label(mi_frame, text="Por favor, registrese primero.",fg="red")
-            advertencia.grid(row=5, column=0, padx = 10, pady =10)
+            advertencia=Label(mi_frame, text="El usuario no esta registrado.\nPor favor, registrese primero.",fg="red")
+            advertencia.grid(row=2, column=2, padx = 10, pady =10)
             advertencia.after(4000, lambda: advertencia.destroy())
         
 
@@ -238,7 +240,7 @@ def nombres_jugadores():
     boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(),bg="#2DBCF1", fg="white",width="15", border=3)
     boton_registro.grid(row=6,column=2,padx = 10, pady =10)
 
-    boton_enviar=Button(mi_frame,text="Jugar", command = lambda: raiz.destroy(),bg="#24CA1C", fg="white",width="15", border=3)
+    boton_enviar=Button(mi_frame,text="Jugar!", command = lambda: raiz.destroy(),bg="#24CA1C", fg="white",width="15", border=3)
     boton_enviar.grid(row=6,column=0,padx = 10, pady =10)
 
 
@@ -336,16 +338,17 @@ def ganador(resultados, partidas):
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
     numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
     contador = 0
+    raiz.partidas = 1
 
     for player in resultados:
         if numero_max == player[TUPLA_DATOS][PUNTOS]:
             contador +=1
 
     if contador>1:
-        resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
+        resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS]) #Se considera ganador al jugador con menor cantidad de intentos
         for j in range (len(resultados)):
             if j == 0:
-                fondo = "#EABE3F"
+                fondo = "#EABE3F" #Fondo del ganador
             else: fondo = "#D5D8DC"
 
             nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[j][NOMBRE]}",bg=fondo)
@@ -378,17 +381,15 @@ def ganador(resultados, partidas):
             promedio_intentos=Label(mi_frame, text=f"Cantidad promedio de intentos: {resultados[i][TUPLA_DATOS][INTENTOS]/len(resultados)}",bg=fondo)
             promedio_intentos.grid(row=i, column=3, padx = 10, pady =10)
 
-    '''
     def reiniciar(partidas):
-        Creada por Milton Fernández
-        partidas += 1
+
+        raiz.partidas += 1
         raiz.destroy()
-        if partidas <=5:
-            main()
-        else:
-            quit()
-    '''
-    boton_continuar=Button(mi_frame,text="Volver a jugar", bg="#24CA1C", fg="white",width="15", border=3)
+    
+        main()
+
+    
+    boton_continuar=Button(mi_frame,text="Volver a jugar",command= lambda: reiniciar(partidas), bg="#24CA1C", fg="white",width="15", border=3)
     boton_continuar.grid(row=len(resultados) + 1,column=1,padx = 10, pady =10)
     
     boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: quit(), bg="#24CA1C", fg="white",width="15", border=3)
@@ -397,11 +398,13 @@ def ganador(resultados, partidas):
     #--------------------------------------- Partidas.csv ---------------------------------------------#
 
     reiniciar_archivo_partidas() #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
-
-    validar_maximo_partidas(partidas, mi_frame, raiz) #Interfaz de control de partidas máximas  
+    
+    validar_maximo_partidas(raiz.partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
 
     resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
     escritura_nombre_puntos_intentos(resultados) #Escribe los datos en Partidas.csv
+
+    raiz.mainloop()
 
 def crear_listas_juego():
     '''
@@ -503,19 +506,26 @@ def validar_ingreso(numero,lista_cartas,lista_juego):
         numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada EXISTENTE en el tablero: ")
     return int(numero)
 
-def validar_registracion(archivo,nombre,contraseña):
+def validar_registracion(nombre,contraseña):
     """
     Valida si el usuario se encuentra en el archivo
     Creada Por: Yennyfer Garcia
     """
+    archivo = open('registro_usuarios.txt',"r")
+
     end="99999"
     linea_1=leerArchivo(archivo,end)
     se_encuentra=False
+    not_contraseña_correcta = False
     while linea_1[0]!=end and se_encuentra==False:
         if linea_1[0]==nombre and linea_1[1]==contraseña:
             se_encuentra=True
-        linea_1=leerArchivo(archivo,end)
-    return se_encuentra
+        elif linea_1[0] == nombre and linea_1[1] !=contraseña:
+            not_contraseña_correcta = True
+        linea_1 =leerArchivo(archivo,end)
+
+    archivo.close()
+    return se_encuentra,not_contraseña_correcta
 
 def validar_nombre_usuario(nombre_usuario):
     """
@@ -524,43 +534,43 @@ def validar_nombre_usuario(nombre_usuario):
     """
     valida=False
     guion_bajo=nombre_usuario.find("_")
-    if (4<=len(nombre_usuario)<=15) and (nombre_usuario.isalpha()== False) and (nombre_usuario.isnumeric()==False) and (guion_bajo!=-1):
+    if 4<=len(nombre_usuario)<=15 and nombre_usuario.isalpha()== False and nombre_usuario.isnumeric()==False and guion_bajo!=-1:
         valida=True
     return valida
 
 def validar_contraseña_usuario(contraseña):
     valida=False
-    alfanumerico= (contraseña.isalpha()==False) and (contraseña.isnumeric()==False)
+    alfanumerico= contraseña.isalpha()==False and contraseña.isnumeric()==False
     i=j=k=l=0
-    if (8<=len(contraseña)<=12) and alfanumerico  :
+    if 8<=len(contraseña)<=12 and alfanumerico:
         invalido=False
         mayuscula=False
         minuscula=False
         guiones=False
         caracteres_invalidos='áéíóúÁÉÍÓÚ'
         #----------OPTIMIZAR-----------------
-        while (guiones==False) and i<len(contraseña):
+        while guiones==False and i<len(contraseña):
             if contraseña[i] == "-" or contraseña[i] == "_" : guiones=True
             i+=1
 
-        while (invalido==False) and j<len(contraseña):
+        while invalido==False and j<len(contraseña):
             if contraseña[j] in caracteres_invalidos: invalido=True
             j+=1
     
-        while (mayuscula==False) and k<len(contraseña):
+        while mayuscula==False and k<len(contraseña):
             if contraseña[k].isupper():mayuscula=True
             k+=1
         
-        while (minuscula==False) and l<len(contraseña):
+        while minuscula==False and l<len(contraseña):
             if contraseña[l].islower(): minuscula=True
             l+=1
         #--------------------------------------
-        if guiones and (invalido==False) and mayuscula and minuscula:
+        if guiones and invalido==False and mayuscula and minuscula:
             valida=True
     
     return valida
 
-def validar_maximo_jugadores(archivo, jugadores): #necesita el archivo de configuracion y la longitud de la lista de jugadores para comparar
+def validar_maximo_jugadores(archivo, jugadores): #necesita el archivo de configuracion y la longitud de la lista de jugadores para comparar.
     """
     verifica que no se sobrepase el limite de jugadores
     Creada Por: Julieta Margenats
@@ -574,44 +584,45 @@ def validar_maximo_jugadores(archivo, jugadores): #necesita el archivo de config
         devolver = False
     return devolver
 
+
 def validar_maximo_partidas(partidas, mi_frame, raiz):
     
     archivo = open('configuracion.csv', 'r')
-
     linea = leerArchivo(archivo,',')
 
     while linea[0] != 'MAXIMO_PARTIDAS' and linea:
         linea = leerArchivo(archivo, ',')
 
-    if int(linea[1]) > partidas:
+    maximo_partidas = int(linea[1])
+    archivo.close() 
+
+    if maximo_partidas > partidas:
         partidas= Label(mi_frame, text= 'Puede seguir \n jugando', fg="red")
         partidas.grid(row=5, column=2, padx = 10, pady =10)
         partidas.after(3000, lambda: partidas.destroy())
 
-    else:#si es igual a maximo de partidas (5)
+    else:#si es igual a maximo de partidas 
         maximos= Label(mi_frame, text="Maximo de partidas alcanzado. \n El juego se cerrará",fg="red")
         maximos.grid(row=5, column=0, padx = 10, pady =10)
         maximos.after(4000, lambda: raiz.destroy())
         
-    archivo.close() 
+     
+
 #------------------------------------- Comienzo del juego -------------------------------------------#
 
 def main():
     '''
     Creada por: Julieta Margenats
     '''
-    seguir = 's'
     partidas = 0
-    while seguir == 's':
-        lista_nombres_usuarios = nombres_jugadores()
-        diccionario = datos_jugadores(lista_nombres_usuarios)
-        lista_juego, lista_cartas, LISTA_VACIA = crear_listas_juego()
-        tiempo_inicial = time.time()
-        resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
-        tiempo_partida = time.time() - tiempo_inicial
-        ganador(resultados, partidas)
-        print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
-        #escritura_fecha_hora()
-        seguir = input("¿Seguir jugando?(s/n): ")
-
+    lista_nombres_usuarios = nombres_jugadores()
+    diccionario = datos_jugadores(lista_nombres_usuarios)
+    lista_juego, lista_cartas, LISTA_VACIA = crear_listas_juego()
+    tiempo_inicial = time.time()
+    resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
+    tiempo_partida = time.time() - tiempo_inicial
+    ganador(resultados, partidas)
+    print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
+    #escritura_fecha_hora()
+        
 main()
