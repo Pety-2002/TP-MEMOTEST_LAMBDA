@@ -9,7 +9,7 @@ import datetime
 
 def mezclar(lista):
     '''
-    Para mezclar las "cartas" y se encuentren en diferentes posiciones en c/partida (se mantienen los caracteres) (etapa 4)
+    Para mezclar las cartas y/o orden de los jugadores para que se encuentren en diferentes posiciones en c/partida.
     Creada por: Facundo Polech
     '''
     lista_mezclada = lista
@@ -118,7 +118,8 @@ def registro():
     boton_volver_inicio=Button(mi_frame,text="Volver inicio",command= lambda: inicio(raiz),bg="#24CA1C", fg="white",width="15", border=3)
     boton_volver_inicio.grid(row=5,column=1,padx = 10, pady =10)
 
-    raiz.mainloop() 
+    raiz.mainloop()
+
 
 def nombres_jugadores():
     """
@@ -134,7 +135,6 @@ def nombres_jugadores():
     mi_frame.pack()
     mi_frame.config(bg="#D5D8DC")
 
-    
     #----------------------- Labels ---------------------#
     raiz.contador = 1 #variable is stored in the root object
 
@@ -152,7 +152,7 @@ def nombres_jugadores():
 
     mensaje_derecha = StringVar() #mensaje que aparece a la derecha
     mensaje_derecha_label=Label(mi_frame, textvariable= mensaje_derecha)
-    mensaje_derecha_label.grid(row=1, column=2,rowspan= 3,padx = 10, pady =10)
+    mensaje_derecha_label.grid(row=0, column=2,rowspan= 3,padx = 10, pady =10)
     mensaje_derecha_label.config(bg="#D5D8DC",fg="red")
 
     mensaje_principio=StringVar() #mensaje que aparece abajo
@@ -204,7 +204,8 @@ def nombres_jugadores():
                 mensaje_derecha.set('Puede seguir \n ingresando usuarios')
             
             else: #Se destruye despues de 4 segundos si llega al maximo
-                mensaje_derecha.set('Maximo de jugadores alcanzado. \n El juego comenzara')
+                mensaje_derecha.set('MAXIMO de jugadores \nalcanzado.El juego \ncomenzara en breve!')
+                turnos(lista,jugadores)
 
         elif usuario_existe[1]: #usuario existe pero la contraseña no es correcta
             mensaje_derecha.set('El usuario existe pero \n la contraseña no es correcta')
@@ -226,9 +227,25 @@ def nombres_jugadores():
         boton_enviar["state"] = NORMAL
 
     def interfaz_registro():
+        '''
+        Cierra la interfaz inicial y abre la interfaz de registro.
+        Creada por: .
+        '''
         raiz.destroy()
         registro()
 
+    def turnos(lista,jugadores):
+        '''
+        Muestra como van a ser los turnos despues de presionar el boton jugar.
+        Creada por: Juan Pedro Demarco.
+        '''
+        mensaje_principio.set("Orden por turnos!!!:")
+        mensaje_validacion.config(bg="#D5D8DC",fg="green")
+        mezclar(lista)
+        jugadores.set(lista)
+        lista_jugadores.after(5000, lambda: raiz.destroy())
+        lista_jugadores.config(bg="#D5D8DC",fg="green")
+        
     #------------------- Botón enviar ------------------#
     boton_agregar_jugador=Button(mi_frame,text="Agregar jugador",command = lambda: agregar_jugador(),bg="#2DBCF1", fg="white",width="15", border=3)
     boton_agregar_jugador.grid(row=6,column=1,padx = 10, pady =10)
@@ -236,11 +253,12 @@ def nombres_jugadores():
     boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(),bg="#2DBCF1", fg="white",width="15", border=3)
     boton_registro.grid(row=6,column=2,padx = 10, pady =10)
 
-    boton_enviar=Button(mi_frame,text="Jugar!", command = lambda:raiz.destroy() ,bg="#24CA1C", fg="white",width="15", border=3)
+    boton_enviar=Button(mi_frame,text="Jugar!", command = lambda:turnos(lista,jugadores) ,bg="#24CA1C", fg="white",width="15", border=3)
     boton_enviar.grid(row=6,column=0,padx = 10, pady =10)
     boton_enviar["state"] = DISABLED
 
-    raiz.mainloop() 
+    raiz.mainloop()
+
     return lista
 
 def datos_jugadores(lista_nombres_ingresados):
@@ -249,10 +267,9 @@ def datos_jugadores(lista_nombres_ingresados):
     Creada por: Juan Pedro Demarco
     '''
     diccionario = {}
-    lista_nombres_ingresados = mezclar(lista_nombres_ingresados)
     for jugador in lista_nombres_ingresados:
         diccionario[jugador] = [0,0] #[cantidad de puntos, cantidad de intentos]
-    return  diccionario
+    return  diccionario 
 
 def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #datos_jugadores es una tupla!
     '''
@@ -264,7 +281,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
     CANT_INTENTOS=1 
 
     #lista_cartas= mezclar(lista_cartas)
-    
+
     diccionario = datos_jugadores[0] #divido mi tupla en diccionario y nombre de usuarios.
     lista_participantes = datos_jugadores[1]
     
@@ -499,7 +516,7 @@ def main():
     Creada por: Julieta Margenats
     '''
     partidas = 0
-    lista_nombres_usuarios = nombres_jugadores()
+    lista_nombres_usuarios = nombres_jugadores() #ya me devuelve la lista desordenada
     diccionario = datos_jugadores(lista_nombres_usuarios)
     lista_juego, lista_cartas, LISTA_VACIA = crear_listas_juego()
     tiempo_inicial = time.time()
