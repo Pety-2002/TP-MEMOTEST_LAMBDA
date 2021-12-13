@@ -16,12 +16,12 @@ def mezclar(lista):
     random.shuffle(lista_mezclada)
     return lista_mezclada
 
-def agregar_linea(archivo,linea):
+def agregar_linea(linea):
     """
     Agrega el nombre y contraseña del usuario al archivo
     Creada Por: Yennyfer Garcia
     """
-    archivo = open ("registro_usuarios.txt","r+")
+    archivo = open ("registro_usuarios.csv","r+")
     archivo.write(linea + "\n")
     archivo.close()
 
@@ -32,40 +32,6 @@ def imprimir_tablero(lista_juego):
     '''
     for contador in range(0,len(lista_juego),4):
         print(lista_juego[contador:4+contador])
-
-def guardar_usuarios(nombre, contraseña, contraseña_repetida, frame):
-    """
-    Agrega a los usuarios al archivo
-    Creada Por: Yennyfer Garcia
-    """
-    mensaje=StringVar()
-    mensaje_validacion=Label(frame,textvariable=mensaje)
-    mensaje_validacion.grid(row=4,column=0, columnspan=2 ,padx = 10, pady =10)
-    mensaje_validacion.config(bg="#D5D8DC",fg="red")
-    
-
-    nombre_valido=validar_nombre_usuario(nombre)
-    if (contraseña_repetida==contraseña) and nombre_valido :
-        
-        archivo_usuarios=open("registro_usuarios.csv","r+")
-        se_encuentra=validar_registracion(archivo_usuarios,nombre, contraseña)
-        contraseña_valida=validar_contraseña_usuario(contraseña)
-
-        if se_encuentra:
-            mensaje.set("Ya se encuentra registrado")       
-        elif contraseña_valida==False:
-            mensaje.set("La contraseña debe contener: Entre 8 y 12 caracteres,\n una letra mayuscula, una letra minuscula (sin acentos)\ny tener un guion (bajo o medio)")
-        else:
-            linea=(f"{nombre},{contraseña}")
-            agregar_linea(archivo_usuarios,linea)
-            mensaje.set("Se ha registrado exitosamente")
-        archivo_usuarios.close()
-    else:
-        mensaje.set("alguno de los datos ingresados \n son invalidos")
-
-def inicio(raiz):
-    raiz.destroy()
-    main()
 
 def registro():
     """
@@ -151,7 +117,6 @@ def registro():
     
     boton_volver_inicio=Button(mi_frame,text="Volver inicio",command= lambda: inicio(raiz),bg="#24CA1C", fg="white",width="15", border=3)
     boton_volver_inicio.grid(row=5,column=1,padx = 10, pady =10)
-
 
     raiz.mainloop() 
 

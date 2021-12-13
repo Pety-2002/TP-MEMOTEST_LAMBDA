@@ -20,12 +20,12 @@ def validar_ingreso(numero,lista_cartas,lista_juego):
         numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada EXISTENTE en el tablero: ")
     return int(numero)
 
-def validar_registracion(archivo,nombre,contraseña):
+def validar_registracion(nombre,contraseña):
     """
     Valida si el usuario se encuentra en el archivo
     Creada Por: Yennyfer Garcia
     """
-    archivo = open('registro_usuarios.txt',"r")
+    archivo = open('registro_usuarios.csv',"r")
 
     end="99999"
     linea_1=leerArchivo(archivo,end)
