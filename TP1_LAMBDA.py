@@ -99,13 +99,13 @@ def registro():
                 mensaje.set("Se ha registrado exitosamente")
 
         elif contraseña_valida==False:
-                mensaje.set("La contraseña debe contener: Entre 8 y 12 caracteres,\n una letra mayuscula, una letra minuscula (sin acentos)\ny tener un guion (bajo o medio)")
+            mensaje.set("La contraseña debe contener: Entre 8 y 12 caracteres,\n una letra mayuscula, una letra minuscula (sin acentos)\ny tener un guion (bajo o medio)")
 
         elif nombre_valido == False:
-                mensaje.set("El nombre de usuario debe contener: Entre 4 y 15 caracteres,\n estar formado sólo por letras, números y el bajo guion.")
+            mensaje.set("El nombre de usuario debe contener: Entre 4 y 15 caracteres,\n estar formado sólo por letras, números y el bajo guion.")
 
         elif contraseña != contraseña_repetida:
-                mensaje.set("Las contraseñas son distintas")
+            mensaje.set("Las contraseñas son distintas")
     def inicio():
         raiz.destroy()
         main()
@@ -123,7 +123,7 @@ def registro():
 def nombres_jugadores():
     """
     CREA LA INTERFAZ para solicitar el nombre de los jugadores 
-    Creada por: Milton Fernandez, Yennyfer Garcia.
+    Creada por: Milton Fernandez, Yennyfer Garcia, Juan Pedro Demarco.
     """
     raiz = Tk()
     lista = [] #guarda los nombres de los jugadores.
@@ -150,6 +150,22 @@ def nombres_jugadores():
     contraseña_usuario=Label(mi_frame, textvariable = contra_label,bg="#D5D8DC")
     contraseña_usuario.grid(row=2, column=0, padx = 10, pady =10)
 
+    mensaje_derecha = StringVar() #mensaje que aparece a la derecha
+    mensaje_derecha_label=Label(mi_frame, textvariable= mensaje_derecha)
+    mensaje_derecha_label.grid(row=1, column=2,rowspan= 3,padx = 10, pady =10)
+    mensaje_derecha_label.config(bg="#D5D8DC",fg="red")
+
+    mensaje_principio=StringVar() #mensaje que aparece abajo
+    mensaje_principio.set("Para empezar a jugar, se necesita agregar al menos 1 jugador!")
+    mensaje_validacion=Label(mi_frame,textvariable=mensaje_principio)
+    mensaje_validacion.grid(row=7,column=0, columnspan=3 ,padx = 10, pady =10)
+    mensaje_validacion.config(bg="#D5D8DC",fg="red")
+    mensaje_validacion.after(4000, lambda: jugadores1())
+
+    jugadores=StringVar() #lista de jugadores
+    lista_jugadores=Label(mi_frame,textvariable=jugadores)
+    lista_jugadores.grid(row=8,column=0, columnspan=3 ,padx = 10, pady =10)
+    lista_jugadores.config(bg="#D5D8DC",fg="blue")
     #---------------- Entradas de texto -----------------#
 
     cuadro_nombre=Entry(mi_frame, border="3")
@@ -159,7 +175,15 @@ def nombres_jugadores():
     cuadro_contraseña.grid(row=2,column=1,padx = 10, pady =10)
     cuadro_contraseña.config(show="*")
 
-    def obtener_nombres():
+    def jugadores1():
+        '''
+        Cambia el mensaje de inicio.
+        Creada por: Juan Pedro Demarco.
+        '''
+        mensaje_principio.set("Jugadores:")
+        mensaje_validacion.config(bg="#D5D8DC",fg="blue")
+
+    def obtener_nombres(jugadores):
         '''
         Guarda el nombre del jugador en una lista, luego de conocer que ya esta registrado. En caso contrario, avisa al participante que
         se registre primero.
@@ -172,33 +196,21 @@ def nombres_jugadores():
 
         if usuario_existe[0]:#usuario y contraseña existen
             lista.append(username) #Los usuarios que se encuentran registrados se van sumando a la lista de jugadores.
-
-            #verificacion el maximo de jugadores
-            ar_config = open('configuracion.csv', 'r')
-            maximo_jugadores = validar_maximo_jugadores(ar_config, len(lista))
-            ar_config.close()
+            jugadores.set(lista)
+            maximo_jugadores = validar_maximo_jugadores(len(lista))#verificacion el maximo de jugadores
 
             if maximo_jugadores:
                 raiz.contador +=1
-                jugadores=Label(mi_frame, text= 'Puede seguir \n ingresando usuarios', fg="red")
-                jugadores.grid(row=2, column=2, padx = 10, pady =10)
-                jugadores.after(3000, lambda: jugadores.destroy())
+                mensaje_derecha.set('Puede seguir \n ingresando usuarios')
             
-            else: #Se destruye despues de 3 segundos si llega al maximo
-                maximos=Label(mi_frame, text="Maximo de jugadores alcanzado. \n El juego comenzara",fg="red")
-                maximos.grid(row=2, column=2, padx = 10, pady =10)
-                maximos.after(4000, lambda: raiz.destroy())
+            else: #Se destruye despues de 4 segundos si llega al maximo
+                mensaje_derecha.set('Maximo de jugadores alcanzado. \n El juego comenzara')
 
         elif usuario_existe[1]: #usuario existe pero la contraseña no es correcta
-            jugadores=Label(mi_frame, text= 'El usuario existe pero \n la contraseña no es correcta', fg="red")
-            jugadores.grid(row=2, column=2, padx = 10, pady =10)
-            jugadores.after(3000, lambda: jugadores.destroy())
+            mensaje_derecha.set('El usuario existe pero \n la contraseña no es correcta')
 
         else:
-            advertencia=Label(mi_frame, text="El usuario no esta registrado.\nPor favor, registrese primero.",fg="red")
-            advertencia.grid(row=2, column=2, padx = 10, pady =10)
-            advertencia.after(4000, lambda: advertencia.destroy())
-        
+            mensaje_derecha.set('El usuario no esta registrado.\nPor favor, registrese primero.')
 
     def agregar_jugador():
         '''
@@ -206,12 +218,12 @@ def nombres_jugadores():
         este registrado anteriormente.
         Creada por: Juan Pedro Demarco.
         '''
-        obtener_nombres()
+        obtener_nombres(jugadores)
         users_label.set(f'Nombre usuario {raiz.contador}:')
         contra_label.set(f'Contraseña usuario {raiz.contador}:')
         cuadro_nombre.delete(0, END)
         cuadro_contraseña.delete(0, END)
-
+        boton_enviar["state"] = NORMAL
 
     def interfaz_registro():
         raiz.destroy()
@@ -224,9 +236,9 @@ def nombres_jugadores():
     boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(),bg="#2DBCF1", fg="white",width="15", border=3)
     boton_registro.grid(row=6,column=2,padx = 10, pady =10)
 
-    boton_enviar=Button(mi_frame,text="Jugar!", command = lambda: raiz.destroy(),bg="#24CA1C", fg="white",width="15", border=3)
+    boton_enviar=Button(mi_frame,text="Jugar!", command = lambda:raiz.destroy() ,bg="#24CA1C", fg="white",width="15", border=3)
     boton_enviar.grid(row=6,column=0,padx = 10, pady =10)
-
+    boton_enviar["state"] = DISABLED
 
     raiz.mainloop() 
     return lista

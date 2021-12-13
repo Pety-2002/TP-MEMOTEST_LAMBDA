@@ -84,18 +84,22 @@ def validar_contraseña_usuario(contraseña):
     
     return valida
 
-def validar_maximo_jugadores(archivo, jugadores): #necesita el archivo de configuracion y la longitud de la lista de jugadores para comparar
+def validar_maximo_jugadores(jugadores): #necesita el archivo de configuracion y la longitud de la lista de jugadores para comparar
     """
     verifica que no se sobrepase el limite de jugadores
     Creada Por: Julieta Margenats
     """
-    linea = leerArchivo(archivo,',')
+    ar_config = open('configuracion.csv', 'r')
+    linea = leerArchivo(ar_config,',')
     while linea[0] != 'MAXIMO_JUGADORES' and linea:
-        linea = leerArchivo(archivo, ',')
-    if int(linea[1]) > jugadores:
-        devolver = True
-    else:#si es igual a maximo de jugadores (2)
-        devolver = False
+        linea = leerArchivo(ar_config, ',')
+    maximo_jugadores = int(linea[1])
+    ar_config.close()
+
+    if  maximo_jugadores> jugadores:
+        devolver = True #Se pueden seguir ingresando jugadores
+    else:
+        devolver = False #No se pueden seguir ingresando jugadores
     return devolver
 
 def validar_maximo_partidas(partidas, mi_frame, raiz):
