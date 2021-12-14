@@ -38,7 +38,7 @@ def registro():
     Crea la interfaz de registro de los usuarios
     Creada Por: Yennyfer Garcia
     """
-
+    
     raiz = Tk()
     raiz.title("Registro Usuarios")
     raiz.config(bg="#D5D8DC")
@@ -86,7 +86,7 @@ def registro():
         """
         nombre_valido=validar_nombre_usuario(nombre)
         contraseña_valida=validar_contraseña_usuario(contraseña)
-
+        
         if contraseña_valida and nombre_valido and contraseña == contraseña_repetida:
             
             usuario_existe=validar_registracion(nombre, contraseña)
@@ -106,16 +106,17 @@ def registro():
 
         elif contraseña != contraseña_repetida:
             mensaje.set("Las contraseñas son distintas")
+
     def inicio():
         raiz.destroy()
-        main()
-                
+        nombres_jugadores()
+    
     #----------Botones---------------------------
 
-    boton_crear_ususario=Button(mi_frame,text="Crear Usuario",command= lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get(),mi_frame) ,bg="#24CA1C", fg="white",width="15", border=3)
+    boton_crear_ususario=Button(mi_frame,text="Crear Usuario",command= lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get()) ,bg="#24CA1C", fg="white",width="15", border=3)
     boton_crear_ususario.grid(row=5,column=0,padx = 10, pady =10)
     
-    boton_volver_inicio=Button(mi_frame,text="Volver inicio",command= lambda: inicio(raiz),bg="#24CA1C", fg="white",width="15", border=3)
+    boton_volver_inicio=Button(mi_frame,text="Volver inicio",command= lambda: inicio(),bg="#24CA1C", fg="white",width="15", border=3)
     boton_volver_inicio.grid(row=5,column=1,padx = 10, pady =10)
 
     raiz.mainloop()
@@ -233,7 +234,8 @@ def nombres_jugadores():
         '''
         raiz.destroy()
         registro()
-
+        os.system("cls")
+        
     def turnos(lista,jugadores):
         '''
         Muestra como van a ser los turnos despues de presionar el boton jugar.
