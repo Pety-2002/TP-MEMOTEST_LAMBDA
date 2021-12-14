@@ -1,11 +1,10 @@
-import datetime
-import os
-import random
-import time
-from tkinter import *
-
+from hoja_validaciones import * 
 from hoja_interfaces import *
-from hoja_validaciones import *
+import random
+from tkinter import *
+import time
+import os
+import datetime
 
 
 def mezclar(lista):
@@ -34,11 +33,7 @@ def imprimir_tablero(lista_juego):
     for contador in range(0,len(lista_juego),4):
         print(lista_juego[contador:4+contador])
 
-def inicio(raiz):
-    raiz.destroy()
-    main()
-
-def registro():
+def registro(num_partidas):
     """
     Crea la interfaz de registro de los usuarios
     Creada Por: Yennyfer Garcia
@@ -76,20 +71,21 @@ def registro():
     contraseña_repetida=Entry(mi_frame,  border="3")
     contraseña_repetida.grid(row=3,column=1,padx = 10, pady =10)
     contraseña_repetida.config(show="*")
-                
-    #----------Botones---------------------------
-    def guardar_usuarios(nombre, contraseña, contraseña_repetida,frame):
+
+
+    mensaje=StringVar()
+    mensaje_validacion=Label(mi_frame,textvariable=mensaje)
+    mensaje_validacion.grid(row=4,column=0, columnspan=2 ,padx = 10, pady =10)
+    mensaje_validacion.config(bg="#D5D8DC",fg="red")
+
+    
+    def guardar_usuarios(nombre, contraseña, contraseña_repetida):
         """
         Agrega a los usuarios al archivo
         Creada Por: Yennyfer Garcia
         """
         nombre_valido=validar_nombre_usuario(nombre)
         contraseña_valida=validar_contraseña_usuario(contraseña)
-
-        mensaje=StringVar()
-        mensaje_validacion=Label(mi_frame,textvariable=mensaje)
-        mensaje_validacion.grid(row=4,column=0, columnspan=2 ,padx = 10, pady =10)
-        mensaje_validacion.config(bg="#D5D8DC",fg="red")
 
         if contraseña_valida and nombre_valido and contraseña == contraseña_repetida:
             
@@ -110,17 +106,43 @@ def registro():
 
         elif contraseña != contraseña_repetida:
             mensaje.set("Las contraseñas son distintas")
+    def inicio(num_partidas):
+        raiz.destroy()
+        main(num_partidas)
+                
+    #----------Botones---------------------------
 
-    boton_crear_ususario=Button(mi_frame,text="Crear Usuario",command= lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get(),mi_frame) ,bg="#24CA1C", fg="white",width="15", border=3)
+    boton_crear_ususario=Button(mi_frame,text="Crear Usuario",command = lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get()) ,bg="#24CA1C", fg="white",width="15", border=3)
     boton_crear_ususario.grid(row=5,column=0,padx = 10, pady =10)
     
-    boton_volver_inicio=Button(mi_frame,text="Volver inicio",command= lambda: inicio(raiz),bg="#24CA1C", fg="white",width="15", border=3)
+    boton_volver_inicio=Button(mi_frame,text="Volver inicio",command = lambda: inicio(num_partidas),bg="#24CA1C", fg="white",width="15", border=3)
     boton_volver_inicio.grid(row=5,column=1,padx = 10, pady =10)
 
     raiz.mainloop()
 
+def turnos(lista,label_jugadores,jugadores, mensaje,label_mensaje,raiz):
+    '''
+    Muestra como van a ser los turnos despues de presionar el boton jugar.
+    Creada por: Juan Pedro Demarco.
+    '''
+    mensaje.set("Orden por turnos!!!:")
+    label_mensaje.config(bg="#D5D8DC",fg="green")
+    mezclar(lista)
+    jugadores.set(lista)
+    label_jugadores.after(5000, lambda: raiz.destroy())
+    label_jugadores.config(bg="#D5D8DC",fg="green")
 
-def nombres_jugadores():
+def interfaz_registro(num_partidas,raiz):
+    '''
+    Cierra la interfaz inicial y abre la interfaz de registro.
+    Creada por: .
+    '''
+    raiz.destroy()
+    registro(num_partidas)
+
+
+
+def nombres_jugadores(num_partidas):
     """
     CREA LA INTERFAZ para solicitar el nombre de los jugadores 
     Creada por: Milton Fernandez, Yennyfer Garcia, Juan Pedro Demarco.
@@ -158,8 +180,8 @@ def nombres_jugadores():
     mensaje_principio.set("Para empezar a jugar, se necesita agregar al menos 1 jugador!")
     mensaje_validacion=Label(mi_frame,textvariable=mensaje_principio)
     mensaje_validacion.grid(row=7,column=0, columnspan=3 ,padx = 10, pady =10)
-    mensaje_validacion.config(bg="#D5D8DC",fg="red")
-    mensaje_validacion.after(4000, lambda: jugadores1())
+    mensaje_validacion.config(bg="#D5D8DC",fg="blue")
+    mensaje_validacion.after(4000, lambda: mensaje_principio.set("Jugadores:"))
 
     jugadores=StringVar() #lista de jugadores
     lista_jugadores=Label(mi_frame,textvariable=jugadores)
@@ -174,23 +196,12 @@ def nombres_jugadores():
     cuadro_contraseña.grid(row=2,column=1,padx = 10, pady =10)
     cuadro_contraseña.config(show="*")
 
-    def jugadores1():
-        '''
-        Cambia el mensaje de inicio.
-        Creada por: Juan Pedro Demarco.
-        '''
-        mensaje_principio.set("Jugadores:")
-        mensaje_validacion.config(bg="#D5D8DC",fg="blue")
-
-    def obtener_nombres(jugadores):
+    def obtener_nombres(jugadores, username,password,raiz,mensaje ):
         '''
         Guarda el nombre del jugador en una lista, luego de conocer que ya esta registrado. En caso contrario, avisa al participante que
         se registre primero.
         Creada por: Julieta Margenats, Juan Pedro Demarco.
         '''
-        username=cuadro_nombre.get()
-        password = cuadro_contraseña.get()
-
         usuario_existe = validar_registracion(username, password)
 
         if usuario_existe[0]:#usuario y contraseña existen
@@ -200,59 +211,40 @@ def nombres_jugadores():
 
             if maximo_jugadores:
                 raiz.contador +=1
-                mensaje_derecha.set('Puede seguir \n ingresando usuarios')
+                mensaje.set('Puede seguir \n ingresando usuarios')
             
             else: #Se destruye despues de 4 segundos si llega al maximo
-                mensaje_derecha.set('MAXIMO de jugadores \nalcanzado.El juego \ncomenzara en breve!')
-                turnos(lista,jugadores)
+                mensaje.set('MAXIMO de jugadores \nalcanzado.El juego \ncomenzara en breve!')
+                turnos(lista,lista_jugadores,jugadores, mensaje_principio,mensaje_validacion,raiz)
 
         elif usuario_existe[1]: #usuario existe pero la contraseña no es correcta
-            mensaje_derecha.set('El usuario existe pero \n la contraseña no es correcta')
+            mensaje.set('El usuario existe pero \n la contraseña no es correcta')
 
         else:
-            mensaje_derecha.set('El usuario no esta registrado.\nPor favor, registrese primero.')
+            mensaje.set('El usuario no esta registrado.\nPor favor, registrese primero.')
 
-    def agregar_jugador():
+    def agregar_jugador(lista,label_usuario,label_contraseña,caja_nombre,caja_contraseña,boton):
         '''
         Funcion que se llama cada vez que queremos agregar un jugador. Actualiza la interfaz en el proceso. Se verifica que el jugador 
         este registrado anteriormente.
         Creada por: Juan Pedro Demarco.
         '''
-        obtener_nombres(jugadores)
-        users_label.set(f'Nombre usuario {raiz.contador}:')
-        contra_label.set(f'Contraseña usuario {raiz.contador}:')
-        cuadro_nombre.delete(0, END)
-        cuadro_contraseña.delete(0, END)
-        boton_enviar["state"] = NORMAL
+        jugadores, nombre, contraseña, raiz, mensaje=lista
+        obtener_nombres(jugadores, nombre, contraseña, raiz, mensaje)
+        label_usuario.set(f'Nombre usuario {raiz.contador}:')
+        label_contraseña.set(f'Contraseña usuario {raiz.contador}:')
+        caja_nombre.delete(0, END)
+        caja_contraseña.delete(0, END)
+        boton["state"] = NORMAL
 
-    def interfaz_registro():
-        '''
-        Cierra la interfaz inicial y abre la interfaz de registro.
-        Creada por: .
-        '''
-        raiz.destroy()
-        registro()
-
-    def turnos(lista,jugadores):
-        '''
-        Muestra como van a ser los turnos despues de presionar el boton jugar.
-        Creada por: Juan Pedro Demarco.
-        '''
-        mensaje_principio.set("Orden por turnos!!!:")
-        mensaje_validacion.config(bg="#D5D8DC",fg="green")
-        mezclar(lista)
-        jugadores.set(lista)
-        lista_jugadores.after(5000, lambda: raiz.destroy())
-        lista_jugadores.config(bg="#D5D8DC",fg="green")
-        
     #------------------- Botón enviar ------------------#
-    boton_agregar_jugador=Button(mi_frame,text="Agregar jugador",command = lambda: agregar_jugador(),bg="#2DBCF1", fg="white",width="15", border=3)
+    boton_agregar_jugador=Button(mi_frame,text="Agregar jugador",command = lambda: agregar_jugador([jugadores,cuadro_nombre.get(),cuadro_contraseña.get(),raiz,mensaje_derecha],users_label, contra_label,cuadro_nombre,cuadro_contraseña,boton_enviar),bg="#2DBCF1", fg="white",width="15", border=3)
     boton_agregar_jugador.grid(row=6,column=1,padx = 10, pady =10)
 
-    boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(),bg="#2DBCF1", fg="white",width="15", border=3)
+    boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(num_partidas,raiz),bg="#2DBCF1", fg="white",width="15", border=3)
     boton_registro.grid(row=6,column=2,padx = 10, pady =10)
 
-    boton_enviar=Button(mi_frame,text="Jugar!", command = lambda:turnos(lista,jugadores) ,bg="#24CA1C", fg="white",width="15", border=3)
+    boton_enviar=Button(mi_frame,text="Jugar!", command = lambda:turnos(lista,lista_jugadores,jugadores, mensaje_principio,mensaje_validacion,raiz) ,bg="#24CA1C", fg="white",width="15", border=3)
     boton_enviar.grid(row=6,column=0,padx = 10, pady =10)
     boton_enviar["state"] = DISABLED
 
@@ -328,7 +320,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
         contador_jugadas_totales += 1
     return diccionario 
 
-def ganador(resultados, partidas):
+def ganador(resultados, num_partidas):
     '''
     En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
     Creada por: Juan Pedro, Facundo Polech
@@ -393,15 +385,14 @@ def ganador(resultados, partidas):
             promedio_intentos=Label(mi_frame, text=f"Cantidad promedio de intentos: {resultados[i][TUPLA_DATOS][INTENTOS]/len(resultados)}",bg=fondo)
             promedio_intentos.grid(row=i, column=3, padx = 10, pady =10)
 
-    def reiniciar(partidas):
+    def reiniciar(num_partidas):
 
-        raiz.partidas += 1
         raiz.destroy()
     
-        main()
+        main(num_partidas)
 
     
-    boton_continuar=Button(mi_frame,text="Volver a jugar",command= lambda: reiniciar(partidas), bg="#24CA1C", fg="white",width="15", border=3)
+    boton_continuar=Button(mi_frame,text="Volver a jugar",command= lambda: reiniciar(num_partidas), bg="#24CA1C", fg="white",width="15", border=3)
     boton_continuar.grid(row=len(resultados) + 1,column=1,padx = 10, pady =10)
     
     boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: quit(), bg="#24CA1C", fg="white",width="15", border=3)
@@ -411,7 +402,7 @@ def ganador(resultados, partidas):
 
     reiniciar_archivo_partidas() #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
     
-    validar_maximo_partidas(raiz.partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
+    validar_maximo_partidas(num_partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
 
     resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
     escritura_nombre_puntos_intentos(resultados) #Escribe los datos en Partidas.csv
@@ -510,19 +501,20 @@ def reiniciar_archivo_partidas():
 
 #------------------------------------- Comienzo del juego -------------------------------------------#
 
-def main():
+def main(num_partidas):
     '''
     Creada por: Julieta Margenats
     '''
-    partidas = 0
-    lista_nombres_usuarios = nombres_jugadores() #ya me devuelve la lista desordenada
+    lista_nombres_usuarios = nombres_jugadores(num_partidas) #ya me devuelve la lista desordenada
     diccionario = datos_jugadores(lista_nombres_usuarios)
     lista_juego, lista_cartas, LISTA_VACIA = crear_listas_juego()
     tiempo_inicial = time.time()
     resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
     tiempo_partida = time.time() - tiempo_inicial
-    ganador(resultados, partidas)
+    num_partidas += 1
+    ganador(resultados, num_partidas)
     print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
     #escritura_fecha_hora()
-        
-main()
+
+num_partidas = 0        
+main(num_partidas)
