@@ -7,6 +7,23 @@ import os
 import datetime
 
 
+def leer_config():
+    '''
+    Lee el archivo de configuracion solo 1 vez al iniciar el programa
+    Creada por: Julieta Margenats
+    '''
+    ar_config = open('configuracion.csv', 'r')
+    linea = leerArchivo(ar_config, ',')
+    cantidad_fichas = int(linea[1])
+    linea = leerArchivo(ar_config, ',')
+    max_jugadores = int(linea[1])
+    linea = leerArchivo(ar_config, ',')
+    max_partidas = int(linea[1])
+    linea = leerArchivo(ar_config, ',')
+    reiniciar_ar = linea[1]
+    return cantidad_fichas, max_jugadores, max_partidas, reiniciar_ar
+
+
 def mezclar(lista):
     '''
     Para mezclar las cartas y/o orden de los jugadores para que se encuentren en diferentes posiciones en c/partida.
@@ -197,7 +214,7 @@ def nombres_jugadores(num_partidas):
         if usuario_existe[0]:#usuario y contraseña existen
             lista.append(username) #Los usuarios que se encuentran registrados se van sumando a la lista de jugadores.
             jugadores.set(lista)
-            maximo_jugadores = validar_maximo_jugadores(len(lista))#verificacion el maximo de jugadores
+            maximo_jugadores = validar_maximo_jugadores(MAXIMO_JUGADORES, len(lista))#verificacion el maximo de jugadores
 
             if maximo_jugadores:
                 raiz.contador +=1
@@ -325,7 +342,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
             lista_cartas[primera_posicion-1] = '[*]'
             lista_cartas[segunda_posicion-1] = '[*]'
             
-        time.sleep(2.5)
+        #time.sleep(2.5)
         os.system("cls")
         contador_jugadas_totales += 1
     return diccionario 
@@ -352,7 +369,7 @@ def ganador(resultados, num_partidas):
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
     numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
     contador = 0
-    raiz.partidas = 1
+    
 
     for player in resultados:
         if numero_max == player[TUPLA_DATOS][PUNTOS]:
@@ -412,7 +429,7 @@ def ganador(resultados, num_partidas):
 
     reiniciar_archivo_partidas() #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
     
-    validar_maximo_partidas(num_partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
+    validar_maximo_partidas(MAXIMO_PARTIDAS, num_partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
 
     resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
     escritura_nombre_puntos_intentos(resultados) #Escribe los datos en Partidas.csv
@@ -423,25 +440,15 @@ def crear_listas_juego():
     '''
     Creada por: Milton Fernández
     '''
-    archivo = open('configuracion.csv', 'r')
-
-    linea = leerArchivo(archivo,',')
-
-    while linea[0] != 'CANTIDAD_FICHAS' and linea:
-        linea = leerArchivo(archivo, ',')
-
-    cantidad_de_fichas = int(linea[1])
-        
-    archivo.close()
 
     lista_juego = []
     lista_cartas = []
     LISTA_VACIA = []
-    cantidad_de_letras = cantidad_de_fichas//2
+    cantidad_de_letras = CANTIDAD_FICHAS//2
     abecedario = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     abecedario_cortado = abecedario[0:cantidad_de_letras]
 
-    for i in range (cantidad_de_fichas):
+    for i in range (CANTIDAD_FICHAS):
         lista_juego.append([i+1])
         LISTA_VACIA.append([i+1])
     
@@ -494,19 +501,12 @@ def reiniciar_archivo_partidas():
     '''
     Creada por: Milton Fernández
     '''
-    archivo = open('configuracion.csv', 'r')
 
-    linea = leerArchivo(archivo,',')
-
-    while linea[0] != 'REINICIAR_ARCHIV0_PARTIDAS' and linea:
-        linea = leerArchivo(archivo, ',')
-
-    if str(linea[1]) == 'False':
+    if REINICIAR_ARCHIV0_PARTIDAS == 'False':
         pass
 
     else:#si es diferente de False
         os.remove('partidas.csv')
-    archivo.close()
 
 
 #------------------------------------- Comienzo del juego -------------------------------------------#
@@ -521,10 +521,12 @@ def main(num_partidas):
     tiempo_inicial = time.time()
     resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
     tiempo_partida = time.time() - tiempo_inicial
+    print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
     num_partidas += 1
     ganador(resultados, num_partidas)
-    print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
     #escritura_fecha_hora()
 
-num_partidas = 0        
+
+CANTIDAD_FICHAS, MAXIMO_JUGADORES, MAXIMO_PARTIDAS, REINICIAR_ARCHIV0_PARTIDAS = leer_config()
+num_partidas = 0 #para copntrolar cuantas partidas se jugaron       
 main(num_partidas)
