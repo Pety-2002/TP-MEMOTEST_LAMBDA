@@ -34,7 +34,7 @@ def leer_config():
     max_partidas = [int(linea[1]), 'configuracion'] if linea[1] else [2, 'defecto']
     linea = leerArchivo(ar_config, ',')
 
-    reiniciar_ar = [linea[1], 'configuracion'] if linea[1] else [False, 'defecto']  
+    reiniciar_ar = [linea[1], 'configuracion'] if linea[1] else [False, 'defecto']
     ar_config.close()
 
     return cantidad_fichas, max_jugadores, max_partidas, reiniciar_ar
@@ -142,11 +142,9 @@ def registro(num_partidas):
     cuadro_contraseña.grid(row=2,column=1,padx = 10, pady =10)
     cuadro_contraseña.config(show="*")
 
-
     contraseña_repetida=Entry(mi_frame,  border="3")
     contraseña_repetida.grid(row=3,column=1,padx = 10, pady =10)
     contraseña_repetida.config(show="*")
-
 
     mensaje=StringVar()
     mensaje_validacion=Label(mi_frame,textvariable=mensaje)
@@ -165,14 +163,15 @@ def registro(num_partidas):
 
 def nombres_jugadores(num_partidas):
     """
-    CREA LA INTERFAZ para solicitar el nombre de los jugadores 
+    CREA LA INTERFAZ INICIAL para solicitar el nombre de los jugadores.
     Creada por: Milton Fernandez, Yennyfer Garcia, Juan Pedro Demarco.
     """
     raiz = Tk()
     lista = [] #guarda los nombres de los jugadores.
     raiz.title("Ingreso Usuarios")
     raiz.config(bg="#D5D8DC")
-    raiz.geometry('460x250')
+    raiz.geometry('500x360')
+    raiz.resizable(False, False)
     mi_frame=Frame(raiz)
     mi_frame.pack()
     mi_frame.config(bg="#D5D8DC")
@@ -200,14 +199,34 @@ def nombres_jugadores(num_partidas):
     mensaje_principio=StringVar() #mensaje que aparece abajo
     mensaje_principio.set("Para empezar a jugar, se necesita agregar al menos 1 jugador!")
     mensaje_validacion=Label(mi_frame,textvariable=mensaje_principio)
-    mensaje_validacion.grid(row=7,column=0, columnspan=3 ,padx = 10, pady =10)
-    mensaje_validacion.config(bg="#D5D8DC",fg="blue")
-    mensaje_validacion.after(4000, lambda: mensaje_principio.set("Jugadores:"))
+    mensaje_validacion.grid(row=4,column=0, columnspan=3 ,padx = 10, pady =5)
+    mensaje_validacion.after(4000, lambda: mensaje_principio.set("JUGADORES: "))
+    mensaje_validacion.config(bg="#3B7E9E",fg="white")
 
     jugadores=StringVar() #lista de jugadores
     lista_jugadores=Label(mi_frame,textvariable=jugadores)
-    lista_jugadores.grid(row=8,column=0, columnspan=3 ,padx = 10, pady =10)
+    lista_jugadores.grid(row=5,column=0, columnspan=3 ,padx = 10, pady =5)
     lista_jugadores.config(bg="#D5D8DC",fg="blue")
+
+    archivo_config=Label(mi_frame,text="ARCHIVO DE CONFIGURACION:")#Archivo de configuracion
+    archivo_config.grid(row=7,column=0, columnspan=3 ,padx = 10, pady =5)
+    archivo_config.config(bg="#3B7E9E",fg="white")
+
+    archivo_config=Label(mi_frame,text=f"CANTIDAD_FICHAS:  {CANTIDAD_FICHAS}")#Archivo de configuracion
+    archivo_config.grid(row=8,column=0, columnspan=4 ,padx = 2, pady =5)
+    archivo_config.config(bg="#2DBCF1",fg="white")
+
+    archivo_config=Label(mi_frame,text=f"MAXIMO_JUGADORES:  {MAXIMO_JUGADORES}")#Archivo de configuracion
+    archivo_config.grid(row=9,column=0, columnspan=4 ,padx = 2, pady =5)
+    archivo_config.config(bg="#2DBCF1",fg="white")
+
+    archivo_config=Label(mi_frame,text=f"MAXIMO_PARTIDAS:  {MAXIMO_PARTIDAS}")#Archivo de configuracion
+    archivo_config.grid(row=10,column=0, columnspan=4 ,padx = 2, pady =5)
+    archivo_config.config(bg="#2DBCF1",fg="white")
+
+    archivo_config=Label(mi_frame,text=f"REINICIAR_ARCHIV0_PARTIDAS:  {REINICIAR_ARCHIV0_PARTIDAS}")#Archivo de configuracion
+    archivo_config.grid(row=11,column=0, columnspan=4 ,padx = 2, pady =5)
+    archivo_config.config(bg="#2DBCF1",fg="white")
     #---------------- Entradas de texto -----------------#
 
     cuadro_nombre=Entry(mi_frame, border="3")
@@ -260,13 +279,13 @@ def nombres_jugadores(num_partidas):
 
     #------------------- Botón enviar ------------------#
     boton_agregar_jugador=Button(mi_frame,text="Agregar jugador",command = lambda: agregar_jugador([jugadores,cuadro_nombre.get(),cuadro_contraseña.get(),raiz,mensaje_derecha],users_label, contra_label,cuadro_nombre,cuadro_contraseña,boton_enviar),bg="#2DBCF1", fg="white",width="15", border=3)
-    boton_agregar_jugador.grid(row=6,column=1,padx = 10, pady =10)
+    boton_agregar_jugador.grid(row=3,column=1,padx = 10, pady =10)
 
     boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(num_partidas,raiz),bg="#2DBCF1", fg="white",width="15", border=3)
-    boton_registro.grid(row=6,column=2,padx = 10, pady =10)
+    boton_registro.grid(row=3,column=2,padx = 10, pady =10)
 
     boton_enviar=Button(mi_frame,text="Jugar!", command = lambda:turnos(lista,lista_jugadores,jugadores, mensaje_principio,mensaje_validacion,raiz) ,bg="#24CA1C", fg="white",width="15", border=3)
-    boton_enviar.grid(row=6,column=0,padx = 10, pady =10)
+    boton_enviar.grid(row=3,column=0,padx = 10, pady =10)
     boton_enviar["state"] = DISABLED
 
     raiz.mainloop()
@@ -443,19 +462,19 @@ def main(num_partidas):
     '''
     Creada por: Julieta Margenats
     '''
-    lista_nombres_usuarios = nombres_jugadores(num_partidas) #ya me devuelve la lista desordenada
-    diccionario = datos_jugadores(lista_nombres_usuarios)
+    lista_nombres_usuarios = nombres_jugadores(num_partidas) #Llamo a la interfaz de inicio, me devuelve la lista desordenada con los jugadores.
+    diccionario = datos_jugadores(lista_nombres_usuarios) #Creo diccionario para cada uno de los jugadores.
     lista_juego, lista_cartas, LISTA_VACIA = crear_listas_juego()
-    tiempo_inicial = time.time()
+    tiempo_inicial = time.time() #Inicializo el tiempo para arrancar a contar
     resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
     tiempo_partida = time.time() - tiempo_inicial
-    print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
-    num_partidas += 1
-    ganador(resultados, num_partidas)
+    #print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
+    num_partidas += 1 #Se incrementa el numero de partidas
+    ganador(resultados, num_partidas) #Se calcula y muestra el ganador del juego en una interfaz.
     #escritura_fecha_hora()
 
 CANTIDAD_FICHAS, MAXIMO_JUGADORES, MAXIMO_PARTIDAS, REINICIAR_ARCHIV0_PARTIDAS = leer_config()
-num_partidas = 0 #para copntrolar cuantas partidas se jugaron       
+num_partidas = 0 #para controlar cuantas partidas se jugaron
 main(num_partidas)
 resumen_total()
 os.remove('resumen_total.csv')
