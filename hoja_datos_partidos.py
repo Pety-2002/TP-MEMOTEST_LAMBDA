@@ -30,9 +30,6 @@ def reiniciar_archivo_partidas(REINICIAR_ARCHIV0_PARTIDAS):
     '''
     Creada por: Milton Fernández
     '''
-
-    if REINICIAR_ARCHIV0_PARTIDAS == 'False':
-        pass
-
-    else:#si es diferente de False
+    if REINICIAR_ARCHIV0_PARTIDAS == 'True':
         os.remove('partidas.csv')
+        

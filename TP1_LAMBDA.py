@@ -6,8 +6,6 @@ from tkinter import *
 import time
 import os
 
-
-
 #----------------- AUXILIARES ----------------
 def mezclar(lista):
     '''
@@ -46,7 +44,7 @@ def agregar_linea(linea):
     archivo.write(linea + "\n")
     archivo.close()
 
-#------------------  EJECUCIONES DE INTERFACES------------------
+#------------------  ACCIONES DE INTERFACES------------------
 
 def guardar_usuarios(nombre, contraseña, contraseña_repetida,mensaje):
     """
@@ -100,6 +98,9 @@ def interfaz_registro(num_partidas,raiz):
     raiz.destroy()
     registro(num_partidas)
 
+def reiniciar(num_partidas,raiz):
+    raiz.destroy()
+    main(num_partidas)
 #-------------------------- INTERFACES------------------------
 
 def registro(num_partidas):
@@ -267,6 +268,48 @@ def nombres_jugadores(num_partidas):
 
     return lista
 
+def interfaz_ganador(resultados):
+    '''
+    En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
+    Creada por: Juan Pedro, Facundo Polech
+    Interfaz y archivo partidas: Milton Fernández
+    '''
+    NOMBRE=PUNTOS=0
+    TUPLA_DATOS=INTENTOS=1
+
+    raiz = Tk()
+    raiz.title("Registro Usuarios")
+    raiz.config(bg="#D5D8DC")
+    raiz.geometry('700x250')
+    mi_frame=Frame(raiz)
+    mi_frame.pack()
+    mi_frame.config(bg="#D5D8DC")
+
+ #Se considera ganador al jugador con menor cantidad de intentos
+    for j in range (len(resultados)):
+        fondo= "#EABE3F" if j == 0 else "#D5D8DC"
+
+        nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[j][NOMBRE]}",bg=fondo)
+        nombre_usuario.grid(row=j, column=0, padx = 10, pady =10)
+            
+        puntos=Label(mi_frame, text=f"Cantidad de aciertos: {resultados[j][TUPLA_DATOS][PUNTOS]}",bg=fondo)
+        puntos.grid(row=j, column=1, padx = 10, pady =10)
+
+        intentos=Label(mi_frame, text=f"Cantidad de intentos: {resultados[j][TUPLA_DATOS][INTENTOS]}",bg=fondo)
+        intentos.grid(row=j, column=2, padx = 10, pady =10)
+
+        promedio_intentos=Label(mi_frame, text=f"Cantidad promedio de intentos: {resultados[j][TUPLA_DATOS][INTENTOS]/len(resultados)}",bg=fondo)
+        promedio_intentos.grid(row=j, column=3, padx = 10, pady =10)
+
+    boton_continuar=Button(mi_frame,text="Volver a jugar",command= lambda: reiniciar(num_partidas,raiz), bg="#24CA1C", fg="white",width="15", border=3)
+    boton_continuar.grid(row=len(resultados) + 1,column=1,padx = 10, pady =10)
+    
+    boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: quit(), bg="#24CA1C", fg="white",width="15", border=3)
+    boton_abandonar.grid(row=len(resultados) + 1,column=2,padx = 10, pady =10)
+    
+    validar_maximo_partidas(MAXIMO_PARTIDAS, num_partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
+    raiz.mainloop()
+
 #-------------------- JUEGO --------------------
 def imprimir_tablero(lista_juego):
     '''
@@ -367,20 +410,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
     return diccionario 
 
 def ganador(resultados, num_partidas):
-    '''
-    En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
-    Creada por: Juan Pedro, Facundo Polech
-    Interfaz y archivo partidas: Milton Fernández
-    '''
-    raiz = Tk()
-    raiz.title("Registro Usuarios")
-    raiz.config(bg="#D5D8DC")
-    raiz.geometry('700x250')
-    mi_frame=Frame(raiz)
-    mi_frame.pack()
-    mi_frame.config(bg="#D5D8DC")
-
-    NOMBRE=PUNTOS=0
+    PUNTOS=0
     TUPLA_DATOS=INTENTOS=1
 
     resultados = [(participante,puntos) for participante , puntos in resultados.items()] #lista de tuplas a partir de diccionario.
@@ -388,7 +418,6 @@ def ganador(resultados, num_partidas):
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
     numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
     contador = 0
-    
 
     for player in resultados:
         if numero_max == player[TUPLA_DATOS][PUNTOS]:
@@ -396,64 +425,12 @@ def ganador(resultados, num_partidas):
 
     if contador>1:
         resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS]) #Se considera ganador al jugador con menor cantidad de intentos
-        for j in range (len(resultados)):
-            if j == 0:
-                fondo = "#EABE3F" #Fondo del ganador
-            else: fondo = "#D5D8DC"
-
-            nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[j][NOMBRE]}",bg=fondo)
-            nombre_usuario.grid(row=j, column=0, padx = 10, pady =10)
-                
-            puntos=Label(mi_frame, text=f"Cantidad de aciertos: {resultados[j][TUPLA_DATOS][PUNTOS]}",bg=fondo)
-            puntos.grid(row=j, column=1, padx = 10, pady =10)
-
-            intentos=Label(mi_frame, text=f"Cantidad de intentos: {resultados[j][TUPLA_DATOS][INTENTOS]}",bg=fondo)
-            intentos.grid(row=j, column=2, padx = 10, pady =10)
-
-            promedio_intentos=Label(mi_frame, text=f"Cantidad promedio de intentos: {resultados[j][TUPLA_DATOS][INTENTOS]/len(resultados)}",bg=fondo)
-            promedio_intentos.grid(row=j, column=3, padx = 10, pady =10)
-
-    else:
-        for i in range (len(resultados)):
-            if i == 0:
-                fondo = "#EABE3F"
-            else: fondo = "#D5D8DC"
-
-            nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[i][NOMBRE]}",bg=fondo)
-            nombre_usuario.grid(row=i, column=0, padx = 10, pady =10)
-
-            puntos=Label(mi_frame, text=f"Cantidad de aciertos: {resultados[i][TUPLA_DATOS][PUNTOS]}",bg=fondo)
-            puntos.grid(row=i, column=1, padx = 10, pady =10)
-
-            intentos=Label(mi_frame, text=f"Cantidad de intentos: {resultados[i][TUPLA_DATOS][INTENTOS]}",bg=fondo)
-            intentos.grid(row=i, column=2, padx = 10, pady =10)
-
-            promedio_intentos=Label(mi_frame, text=f"Cantidad promedio de intentos: {resultados[i][TUPLA_DATOS][INTENTOS]/len(resultados)}",bg=fondo)
-            promedio_intentos.grid(row=i, column=3, padx = 10, pady =10)
-
-    def reiniciar(num_partidas):
-
-        raiz.destroy()
     
-        main(num_partidas)
-
-    
-    boton_continuar=Button(mi_frame,text="Volver a jugar",command= lambda: reiniciar(num_partidas), bg="#24CA1C", fg="white",width="15", border=3)
-    boton_continuar.grid(row=len(resultados) + 1,column=1,padx = 10, pady =10)
-    
-    boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: quit(), bg="#24CA1C", fg="white",width="15", border=3)
-    boton_abandonar.grid(row=len(resultados) + 1,column=2,padx = 10, pady =10)
-    
+    interfaz_ganador(resultados)
     #--------------------------------------- Partidas.csv ---------------------------------------------#
-
-    reiniciar_archivo_partidas(REINICIAR_ARCHIV0_PARTIDAS) #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
     
-    validar_maximo_partidas(MAXIMO_PARTIDAS, num_partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
-
-    resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
-    escritura_nombre_puntos_intentos(resultados) #Escribe los datos en Partidas.csv
-
-    raiz.mainloop()
+    reiniciar_archivo_partidas(REINICIAR_ARCHIV0_PARTIDAS) 
+    escritura_nombre_puntos_intentos(resultados) 
 
 #------------------------------------- COMIENZO DEL JUEGO -------------------------------------------#
 
