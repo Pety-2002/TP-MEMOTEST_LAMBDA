@@ -1,6 +1,7 @@
-from tkinter import *
-#------------------- Validaciones --------------------#
 
+from tkinter import *
+
+#------------------- Validaciones --------------------#
 
 #sacar esta funcion de aqui
 def leerArchivo(archivo, default):
@@ -64,7 +65,7 @@ def validar_contraseña_usuario(contraseña):
         caracteres_invalidos='áéíóúÁÉÍÓÚ'
         #----------OPTIMIZAR-----------------
         while guiones==False and i<len(contraseña):
-            if contraseña[i] == "-" or contraseña[i] == "_" : guiones=True
+            if contraseña[i] == "-" or contraseña[i] == "_": guiones=True
             i+=1
 
         while invalido==False and j<len(contraseña):
