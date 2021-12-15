@@ -1,5 +1,4 @@
 from hoja_validaciones import * 
-from hoja_interfaces import *
 from hoja_datos_partidos import *
 import random
 from tkinter import *
