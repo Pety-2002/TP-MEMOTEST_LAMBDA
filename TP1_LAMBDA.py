@@ -25,7 +25,7 @@ def leer_config():
     ar_config = open('configuracion.csv', 'r')
     linea = leerArchivo(ar_config, ',')
 
-    cantidad_fichas = [int(linea[1]), 'configuracion'] if linea[1] and linea[1] % 2 == 0 and linea[1] < 53 else [8, 'defecto']
+    cantidad_fichas = [int(linea[1]), 'configuracion'] if linea[1] and (int(linea[1]) % 2 == 0) and (int(linea[1]) < 53) else [8, 'defecto']
     linea = leerArchivo(ar_config, ',')
 
     max_jugadores = [int(linea[1]), 'configuracion'] if linea[1] else [3, 'defecto']
