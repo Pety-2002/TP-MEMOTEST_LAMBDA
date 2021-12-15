@@ -28,13 +28,19 @@ def leer_config():
     '''
     ar_config = open('configuracion.csv', 'r')
     linea = leerArchivo(ar_config, ',')
-    cantidad_fichas = int(linea[1])
+
+    cantidad_fichas = [int(linea[1]), 'configuracion'] if linea[1] else [8, 'defecto']
     linea = leerArchivo(ar_config, ',')
-    max_jugadores = int(linea[1])
+
+    max_jugadores = [int(linea[1]), 'configuracion'] if linea[1] else [3, 'defecto']
     linea = leerArchivo(ar_config, ',')
-    max_partidas = int(linea[1])
+
+    max_partidas = [int(linea[1]), 'configuracion'] if linea[1] else [2, 'defecto']
     linea = leerArchivo(ar_config, ',')
-    reiniciar_ar = linea[1]
+
+    reiniciar_ar = [linea[1], 'configuracion'] if linea[1] else [False, 'defecto']  
+    ar_config.close()
+
     return cantidad_fichas, max_jugadores, max_partidas, reiniciar_ar
 
 def agregar_linea(linea):
@@ -222,7 +228,7 @@ def nombres_jugadores(num_partidas):
         if usuario_existe[0]:#usuario y contraseña existen
             lista.append(username) #Los usuarios que se encuentran registrados se van sumando a la lista de jugadores.
             jugadores.set(lista)
-            maximo_jugadores = validar_maximo_jugadores(MAXIMO_JUGADORES, len(lista))#verificacion el maximo de jugadores
+            maximo_jugadores = validar_maximo_jugadores(MAXIMO_JUGADORES[0], len(lista))#verificacion el maximo de jugadores
 
             if maximo_jugadores:
                 raiz.contador +=1
@@ -294,11 +300,11 @@ def crear_listas_juego():
     lista_juego = []
     lista_cartas = []
     LISTA_VACIA = []
-    cantidad_de_letras = CANTIDAD_FICHAS//2
+    cantidad_de_letras = CANTIDAD_FICHAS[0]//2
     abecedario = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     abecedario_cortado = abecedario[0:cantidad_de_letras]
 
-    for i in range (CANTIDAD_FICHAS):
+    for i in range (CANTIDAD_FICHAS[0]):
         lista_juego.append([i+1])
         LISTA_VACIA.append([i+1])
     
@@ -421,7 +427,7 @@ def ganador(resultados, num_partidas):
 
             nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[i][NOMBRE]}",bg=fondo)
             nombre_usuario.grid(row=i, column=0, padx = 10, pady =10)
-
+ 
             puntos=Label(mi_frame, text=f"Cantidad de aciertos: {resultados[i][TUPLA_DATOS][PUNTOS]}",bg=fondo)
             puntos.grid(row=i, column=1, padx = 10, pady =10)
 
@@ -441,14 +447,14 @@ def ganador(resultados, num_partidas):
     boton_continuar=Button(mi_frame,text="Volver a jugar",command= lambda: reiniciar(num_partidas), bg="#24CA1C", fg="white",width="15", border=3)
     boton_continuar.grid(row=len(resultados) + 1,column=1,padx = 10, pady =10)
     
-    boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: quit(), bg="#24CA1C", fg="white",width="15", border=3)
+    boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: raiz.destroy(), bg="#24CA1C", fg="white",width="15", border=3)
     boton_abandonar.grid(row=len(resultados) + 1,column=2,padx = 10, pady =10)
     
     #--------------------------------------- Partidas.csv ---------------------------------------------#
 
-    reiniciar_archivo_partidas(REINICIAR_ARCHIV0_PARTIDAS) #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
+    reiniciar_archivo_partidas(REINICIAR_ARCHIV0_PARTIDAS[0]) #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
     
-    validar_maximo_partidas(MAXIMO_PARTIDAS, num_partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
+    validar_maximo_partidas(MAXIMO_PARTIDAS[0], num_partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
 
     resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
     escritura_nombre_puntos_intentos(resultados) #Escribe los datos en Partidas.csv
@@ -475,3 +481,5 @@ def main(num_partidas):
 CANTIDAD_FICHAS, MAXIMO_JUGADORES, MAXIMO_PARTIDAS, REINICIAR_ARCHIV0_PARTIDAS = leer_config()
 num_partidas = 0 #para copntrolar cuantas partidas se jugaron       
 main(num_partidas)
+resumen_total()
+os.remove('resumen_total.csv')
