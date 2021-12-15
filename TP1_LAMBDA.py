@@ -21,18 +21,23 @@ def leer_config():
     '''
     Lee el archivo de configuracion solo 1 vez al iniciar el programa
     Creada por: Julieta Margenats
-
     Si no tienen los valores prestablecidos, se tienen que configurar lo valores "por defecto" usqra ternario
     '''
     ar_config = open('configuracion.csv', 'r')
     linea = leerArchivo(ar_config, ',')
-    cantidad_fichas = int(linea[1])
+
+    cantidad_fichas = [int(linea[1]), 'configuracion'] if linea[1] else [8, 'defecto']
     linea = leerArchivo(ar_config, ',')
-    max_jugadores = int(linea[1])
+
+    max_jugadores = [int(linea[1]), 'configuracion'] if linea[1] else [3, 'defecto']
     linea = leerArchivo(ar_config, ',')
-    max_partidas = int(linea[1])
+
+    max_partidas = [int(linea[1]), 'configuracion'] if linea[1] else [2, 'defecto']
     linea = leerArchivo(ar_config, ',')
-    reiniciar_ar = linea[1]
+
+    reiniciar_ar = [linea[1], 'configuracion'] if linea[1] else [False, 'defecto']  
+    ar_config.close()
+
     return cantidad_fichas, max_jugadores, max_partidas, reiniciar_ar
 
 def agregar_linea(linea):
@@ -40,11 +45,11 @@ def agregar_linea(linea):
     Agrega el nombre y contraseña del usuario al archivo
     Creada Por: Yennyfer Garcia
     """
-    archivo = open ("registro_usuarios.csv","r+")
+    archivo = open ("registro_usuarios.csv","a")
     archivo.write(linea + "\n")
     archivo.close()
 
-#------------------  ACCIONES DE INTERFACES------------------
+#------------------  EJECUCIONES DE INTERFACES------------------
 
 def guardar_usuarios(nombre, contraseña, contraseña_repetida,mensaje):
     """
@@ -101,6 +106,7 @@ def interfaz_registro(num_partidas,raiz):
 def reiniciar(num_partidas,raiz):
     raiz.destroy()
     main(num_partidas)
+
 #-------------------------- INTERFACES------------------------
 
 def registro(num_partidas):
@@ -223,7 +229,7 @@ def nombres_jugadores(num_partidas):
         if usuario_existe[0]:#usuario y contraseña existen
             lista.append(username) #Los usuarios que se encuentran registrados se van sumando a la lista de jugadores.
             jugadores.set(lista)
-            maximo_jugadores = validar_maximo_jugadores(MAXIMO_JUGADORES, len(lista))#verificacion el maximo de jugadores
+            maximo_jugadores = validar_maximo_jugadores(MAXIMO_JUGADORES[0], len(lista))#verificacion el maximo de jugadores
 
             if maximo_jugadores:
                 raiz.contador +=1
@@ -268,15 +274,7 @@ def nombres_jugadores(num_partidas):
 
     return lista
 
-def interfaz_ganador(resultados):
-    '''
-    En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
-    Creada por: Juan Pedro, Facundo Polech
-    Interfaz y archivo partidas: Milton Fernández
-    '''
-    NOMBRE=PUNTOS=0
-    TUPLA_DATOS=INTENTOS=1
-
+def interfaz_ganador(resultados,num_partidas):
     raiz = Tk()
     raiz.title("Registro Usuarios")
     raiz.config(bg="#D5D8DC")
@@ -285,9 +283,12 @@ def interfaz_ganador(resultados):
     mi_frame.pack()
     mi_frame.config(bg="#D5D8DC")
 
- #Se considera ganador al jugador con menor cantidad de intentos
+    NOMBRE=PUNTOS=0
+    TUPLA_DATOS=INTENTOS=1
+
     for j in range (len(resultados)):
-        fondo= "#EABE3F" if j == 0 else "#D5D8DC"
+        
+        fondo="#EABE3F" if j == 0 else "#D5D8DC"
 
         nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[j][NOMBRE]}",bg=fondo)
         nombre_usuario.grid(row=j, column=0, padx = 10, pady =10)
@@ -300,14 +301,14 @@ def interfaz_ganador(resultados):
 
         promedio_intentos=Label(mi_frame, text=f"Cantidad promedio de intentos: {resultados[j][TUPLA_DATOS][INTENTOS]/len(resultados)}",bg=fondo)
         promedio_intentos.grid(row=j, column=3, padx = 10, pady =10)
-
+    
     boton_continuar=Button(mi_frame,text="Volver a jugar",command= lambda: reiniciar(num_partidas,raiz), bg="#24CA1C", fg="white",width="15", border=3)
     boton_continuar.grid(row=len(resultados) + 1,column=1,padx = 10, pady =10)
     
-    boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: quit(), bg="#24CA1C", fg="white",width="15", border=3)
+    boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: raiz.destroy(), bg="#24CA1C", fg="white",width="15", border=3)
     boton_abandonar.grid(row=len(resultados) + 1,column=2,padx = 10, pady =10)
-    
-    validar_maximo_partidas(MAXIMO_PARTIDAS, num_partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
+
+    validar_maximo_partidas(MAXIMO_PARTIDAS[0], num_partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
     raiz.mainloop()
 
 #-------------------- JUEGO --------------------
@@ -337,11 +338,11 @@ def crear_listas_juego():
     lista_juego = []
     lista_cartas = []
     LISTA_VACIA = []
-    cantidad_de_letras = CANTIDAD_FICHAS//2
+    cantidad_de_letras = CANTIDAD_FICHAS[0]//2
     abecedario = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     abecedario_cortado = abecedario[0:cantidad_de_letras]
 
-    for i in range (CANTIDAD_FICHAS):
+    for i in range (CANTIDAD_FICHAS[0]):
         lista_juego.append([i+1])
         LISTA_VACIA.append([i+1])
     
@@ -410,6 +411,11 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
     return diccionario 
 
 def ganador(resultados, num_partidas):
+    '''
+    En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
+    Creada por: Juan Pedro, Facundo Polech
+    Interfaz y archivo partidas: Milton Fernández
+    '''
     PUNTOS=0
     TUPLA_DATOS=INTENTOS=1
 
@@ -424,13 +430,13 @@ def ganador(resultados, num_partidas):
             contador +=1
 
     if contador>1:
-        resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS]) #Se considera ganador al jugador con menor cantidad de intentos
+            resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS]) #Se considera ganador al jugador con menor cantidad de intentos
     
-    interfaz_ganador(resultados)
+    interfaz_ganador(resultados,num_partidas)
     #--------------------------------------- Partidas.csv ---------------------------------------------#
-    
-    reiniciar_archivo_partidas(REINICIAR_ARCHIV0_PARTIDAS) 
-    escritura_nombre_puntos_intentos(resultados) 
+
+    reiniciar_archivo_partidas(REINICIAR_ARCHIV0_PARTIDAS[0]) #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
+    escritura_nombre_puntos_intentos(resultados) #Escribe los datos en Partidas.csv
 
 #------------------------------------- COMIENZO DEL JUEGO -------------------------------------------#
 
@@ -452,3 +458,5 @@ def main(num_partidas):
 CANTIDAD_FICHAS, MAXIMO_JUGADORES, MAXIMO_PARTIDAS, REINICIAR_ARCHIV0_PARTIDAS = leer_config()
 num_partidas = 0 #para copntrolar cuantas partidas se jugaron       
 main(num_partidas)
+resumen_total()
+os.remove('resumen_total.csv')
