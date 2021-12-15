@@ -1,12 +1,14 @@
 from hoja_validaciones import * 
 from hoja_interfaces import *
+from hoja_datos_partidos import *
 import random
 from tkinter import *
 import time
 import os
-import datetime
 
 
+
+#----------------- AUXILIARES ----------------
 def mezclar(lista):
     '''
     Para mezclar las cartas y/o orden de los jugadores para que se encuentren en diferentes posiciones en c/partida.
@@ -15,6 +17,25 @@ def mezclar(lista):
     lista_mezclada = lista
     random.shuffle(lista_mezclada)
     return lista_mezclada
+
+#----------------- ARCHIVOS----------------------
+def leer_config():
+    '''
+    Lee el archivo de configuracion solo 1 vez al iniciar el programa
+    Creada por: Julieta Margenats
+
+    Si no tienen los valores prestablecidos, se tienen que configurar lo valores "por defecto" usqra ternario
+    '''
+    ar_config = open('configuracion.csv', 'r')
+    linea = leerArchivo(ar_config, ',')
+    cantidad_fichas = int(linea[1])
+    linea = leerArchivo(ar_config, ',')
+    max_jugadores = int(linea[1])
+    linea = leerArchivo(ar_config, ',')
+    max_partidas = int(linea[1])
+    linea = leerArchivo(ar_config, ',')
+    reiniciar_ar = linea[1]
+    return cantidad_fichas, max_jugadores, max_partidas, reiniciar_ar
 
 def agregar_linea(linea):
     """
@@ -25,13 +46,61 @@ def agregar_linea(linea):
     archivo.write(linea + "\n")
     archivo.close()
 
-def imprimir_tablero(lista_juego):
+#------------------  EJECUCIONES DE INTERFACES------------------
+
+def guardar_usuarios(nombre, contraseña, contraseña_repetida,mensaje):
+    """
+    Agrega a los usuarios al archivo
+    Creada Por: Yennyfer Garcia
+    """
+    nombre_valido=validar_nombre_usuario(nombre)
+    contraseña_valida=validar_contraseña_usuario(contraseña)
+
+    if contraseña_valida and nombre_valido and contraseña == contraseña_repetida:
+        
+        usuario_existe=validar_registracion(nombre, contraseña)
+        
+        if usuario_existe[0]:
+            mensaje.set("Usted ya se encuentra registrado")
+        else:
+            linea=(f"{nombre},{contraseña}")
+            agregar_linea(linea)
+            mensaje.set("Se ha registrado exitosamente")
+
+    elif contraseña_valida==False:
+        mensaje.set("La contraseña debe contener: Entre 8 y 12 caracteres,\n una letra mayuscula, una letra minuscula (sin acentos)\ny tener un guion (bajo o medio)")
+
+    elif nombre_valido == False:
+        mensaje.set("El nombre de usuario debe contener: Entre 4 y 15 caracteres,\n estar formado sólo por letras, números y el bajo guion.")
+
+    elif contraseña != contraseña_repetida:
+        mensaje.set("Las contraseñas son distintas")
+
+def inicio(num_partidas,raiz):
+    raiz.destroy()
+    main(num_partidas)
+
+def turnos(lista,label_jugadores,jugadores, mensaje,label_mensaje,raiz):
     '''
-    Imprimo el tablero. Creo slices de 4 para imprimir por linea 4 fichas.
-    Creada por: Juan Pedro Demarco
+    Muestra como van a ser los turnos despues de presionar el boton jugar.
+    Creada por: Juan Pedro Demarco.
     '''
-    for contador in range(0,len(lista_juego),4):
-        print(lista_juego[contador:4+contador])
+    mensaje.set("Orden por turnos!!!:")
+    label_mensaje.config(bg="#D5D8DC",fg="green")
+    mezclar(lista)
+    jugadores.set(lista)
+    label_jugadores.after(5000, lambda: raiz.destroy())
+    label_jugadores.config(bg="#D5D8DC",fg="green")
+
+def interfaz_registro(num_partidas,raiz):
+    '''
+    Cierra la interfaz inicial y abre la interfaz de registro.
+    Creada por: .
+    '''
+    raiz.destroy()
+    registro(num_partidas)
+
+#-------------------------- INTERFACES------------------------
 
 def registro(num_partidas):
     """
@@ -78,69 +147,15 @@ def registro(num_partidas):
     mensaje_validacion.grid(row=4,column=0, columnspan=2 ,padx = 10, pady =10)
     mensaje_validacion.config(bg="#D5D8DC",fg="red")
 
-    
-    def guardar_usuarios(nombre, contraseña, contraseña_repetida):
-        """
-        Agrega a los usuarios al archivo
-        Creada Por: Yennyfer Garcia
-        """
-        nombre_valido=validar_nombre_usuario(nombre)
-        contraseña_valida=validar_contraseña_usuario(contraseña)
-
-        if contraseña_valida and nombre_valido and contraseña == contraseña_repetida:
-            
-            usuario_existe=validar_registracion(nombre, contraseña)
-            
-            if usuario_existe[0]:
-                mensaje.set("Usted ya se encuentra registrado")
-            else:
-                linea=(f"{nombre},{contraseña}")
-                agregar_linea(linea)
-                mensaje.set("Se ha registrado exitosamente")
-
-        elif contraseña_valida==False:
-            mensaje.set("La contraseña debe contener: Entre 8 y 12 caracteres,\n una letra mayuscula, una letra minuscula (sin acentos)\ny tener un guion (bajo o medio)")
-
-        elif nombre_valido == False:
-            mensaje.set("El nombre de usuario debe contener: Entre 4 y 15 caracteres,\n estar formado sólo por letras, números y el bajo guion.")
-
-        elif contraseña != contraseña_repetida:
-            mensaje.set("Las contraseñas son distintas")
-    def inicio(num_partidas):
-        raiz.destroy()
-        main(num_partidas)
-                
     #----------Botones---------------------------
 
-    boton_crear_ususario=Button(mi_frame,text="Crear Usuario",command = lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get()) ,bg="#24CA1C", fg="white",width="15", border=3)
+    boton_crear_ususario=Button(mi_frame,text="Crear Usuario",command = lambda: guardar_usuarios(cuadro_nombre.get(), cuadro_contraseña.get(), contraseña_repetida.get(),mensaje) ,bg="#24CA1C", fg="white",width="15", border=3)
     boton_crear_ususario.grid(row=5,column=0,padx = 10, pady =10)
     
-    boton_volver_inicio=Button(mi_frame,text="Volver inicio",command = lambda: inicio(num_partidas),bg="#24CA1C", fg="white",width="15", border=3)
+    boton_volver_inicio=Button(mi_frame,text="Volver inicio",command = lambda: inicio(num_partidas,raiz),bg="#24CA1C", fg="white",width="15", border=3)
     boton_volver_inicio.grid(row=5,column=1,padx = 10, pady =10)
 
     raiz.mainloop()
-
-def turnos(lista,label_jugadores,jugadores, mensaje,label_mensaje,raiz):
-    '''
-    Muestra como van a ser los turnos despues de presionar el boton jugar.
-    Creada por: Juan Pedro Demarco.
-    '''
-    mensaje.set("Orden por turnos!!!:")
-    label_mensaje.config(bg="#D5D8DC",fg="green")
-    mezclar(lista)
-    jugadores.set(lista)
-    label_jugadores.after(5000, lambda: raiz.destroy())
-    label_jugadores.config(bg="#D5D8DC",fg="green")
-
-def interfaz_registro(num_partidas,raiz):
-    '''
-    Cierra la interfaz inicial y abre la interfaz de registro.
-    Creada por: .
-    '''
-    raiz.destroy()
-    registro(num_partidas)
-
-
 
 def nombres_jugadores(num_partidas):
     """
@@ -207,12 +222,12 @@ def nombres_jugadores(num_partidas):
         if usuario_existe[0]:#usuario y contraseña existen
             lista.append(username) #Los usuarios que se encuentran registrados se van sumando a la lista de jugadores.
             jugadores.set(lista)
-            maximo_jugadores = validar_maximo_jugadores(len(lista))#verificacion el maximo de jugadores
+            maximo_jugadores = validar_maximo_jugadores(MAXIMO_JUGADORES, len(lista))#verificacion el maximo de jugadores
 
             if maximo_jugadores:
                 raiz.contador +=1
                 mensaje.set('Puede seguir \n ingresando usuarios')
-            
+
             else: #Se destruye despues de 4 segundos si llega al maximo
                 mensaje.set('MAXIMO de jugadores \nalcanzado.El juego \ncomenzara en breve!')
                 turnos(lista,lista_jugadores,jugadores, mensaje_principio,mensaje_validacion,raiz)
@@ -252,6 +267,15 @@ def nombres_jugadores(num_partidas):
 
     return lista
 
+#-------------------- JUEGO --------------------
+def imprimir_tablero(lista_juego):
+    '''
+    Imprimo el tablero. Creo slices de 4 para imprimir por linea 4 fichas.
+    Creada por: Juan Pedro Demarco
+    '''
+    for contador in range(0,len(lista_juego),4):
+        print(lista_juego[contador:4+contador])
+
 def datos_jugadores(lista_nombres_ingresados):
     ''' 
     Crea el diccionario donde se registraran los datos de cada jugador.
@@ -261,6 +285,28 @@ def datos_jugadores(lista_nombres_ingresados):
     for jugador in lista_nombres_ingresados:
         diccionario[jugador] = [0,0] #[cantidad de puntos, cantidad de intentos]
     return  diccionario 
+
+def crear_listas_juego():
+    '''
+    Creada por: Milton Fernández
+    '''
+
+    lista_juego = []
+    lista_cartas = []
+    LISTA_VACIA = []
+    cantidad_de_letras = CANTIDAD_FICHAS//2
+    abecedario = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    abecedario_cortado = abecedario[0:cantidad_de_letras]
+
+    for i in range (CANTIDAD_FICHAS):
+        lista_juego.append([i+1])
+        LISTA_VACIA.append([i+1])
+    
+    for j in abecedario_cortado:
+        lista_cartas.append([j])
+        lista_cartas.append([j])
+    
+    return lista_juego, lista_cartas, LISTA_VACIA
 
 def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #datos_jugadores es una tupla!
     '''
@@ -315,7 +361,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
             lista_cartas[primera_posicion-1] = '[*]'
             lista_cartas[segunda_posicion-1] = '[*]'
             
-        time.sleep(2.5)
+        #time.sleep(2.5)
         os.system("cls")
         contador_jugadas_totales += 1
     return diccionario 
@@ -342,7 +388,7 @@ def ganador(resultados, num_partidas):
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
     numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
     contador = 0
-    raiz.partidas = 1
+    
 
     for player in resultados:
         if numero_max == player[TUPLA_DATOS][PUNTOS]:
@@ -400,106 +446,16 @@ def ganador(resultados, num_partidas):
     
     #--------------------------------------- Partidas.csv ---------------------------------------------#
 
-    reiniciar_archivo_partidas() #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
+    reiniciar_archivo_partidas(REINICIAR_ARCHIV0_PARTIDAS) #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
     
-    validar_maximo_partidas(num_partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
+    validar_maximo_partidas(MAXIMO_PARTIDAS, num_partidas, mi_frame, raiz) #Interfaz de control de partidas máximas.
 
     resultados.sort(key = lambda tupla: tupla[TUPLA_DATOS][INTENTOS])
     escritura_nombre_puntos_intentos(resultados) #Escribe los datos en Partidas.csv
 
     raiz.mainloop()
 
-def crear_listas_juego():
-    '''
-    Creada por: Milton Fernández
-    '''
-    archivo = open('configuracion.csv', 'r')
-
-    linea = leerArchivo(archivo,',')
-
-    while linea[0] != 'CANTIDAD_FICHAS' and linea:
-        linea = leerArchivo(archivo, ',')
-
-    cantidad_de_fichas = int(linea[1])
-        
-    archivo.close()
-
-    lista_juego = []
-    lista_cartas = []
-    LISTA_VACIA = []
-    cantidad_de_letras = cantidad_de_fichas//2
-    abecedario = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    abecedario_cortado = abecedario[0:cantidad_de_letras]
-
-    for i in range (cantidad_de_fichas):
-        lista_juego.append([i+1])
-        LISTA_VACIA.append([i+1])
-    
-    for j in abecedario_cortado:
-        lista_cartas.append([j])
-        lista_cartas.append([j])
-    
-    return lista_juego, lista_cartas, LISTA_VACIA
-
-#---------------Modificacion partidas_file -----------#   
-def escritura_fecha_hora():
-    '''
-    Creada por: Milton Fernández
-    '''
-    fecha = datetime.datetime.now()
-    fecha_de_partida = fecha.strftime('%d/%m/%Y')
-    hora_de_finalizacion = fecha.strftime('%H:%M:%S')
-    archivo = open("partidas.csv", "a")
-    archivo.write("fecha_de_partida:")
-    archivo.write(fecha_de_partida)
-    archivo.write("; ")
-    archivo.write("Hora de finalizacion:")
-    archivo.write(hora_de_finalizacion)
-    archivo.write("\n")
-    archivo.write("----------------------")
-    archivo.write("\n")
-
-def escritura_nombre_puntos_intentos(resultados):
-    NOMBRE=PUNTOS=0
-    TUPLA_DATOS=INTENTOS=1
-    for j in range (len(resultados)):
-        archivo = open("partidas.csv", "a")
-        fecha = datetime.datetime.now()
-        fecha_de_partida = fecha.strftime('%d/%m/%Y')
-        hora_de_finalizacion = fecha.strftime('%H:%M:%S')
-        archivo.write(fecha_de_partida)
-        archivo.write(",")
-        archivo.write(hora_de_finalizacion)
-        archivo.write(",")
-        archivo.write(str(resultados[j][NOMBRE]))
-        archivo.write(",")
-        archivo.write(str(resultados[j][TUPLA_DATOS][PUNTOS]))
-        archivo.write(",")
-        archivo.write(str(resultados[j][TUPLA_DATOS][INTENTOS]))
-        archivo.write(",")
-        archivo.write(str(resultados[j][TUPLA_DATOS][INTENTOS]//len(resultados)))
-        archivo.write("\n")
-
-def reiniciar_archivo_partidas():
-    '''
-    Creada por: Milton Fernández
-    '''
-    archivo = open('configuracion.csv', 'r')
-
-    linea = leerArchivo(archivo,',')
-
-    while linea[0] != 'REINICIAR_ARCHIV0_PARTIDAS' and linea:
-        linea = leerArchivo(archivo, ',')
-
-    if str(linea[1]) == 'False':
-        pass
-
-    else:#si es diferente de False
-        os.remove('partidas.csv')
-    archivo.close()
-
-
-#------------------------------------- Comienzo del juego -------------------------------------------#
+#------------------------------------- COMIENZO DEL JUEGO -------------------------------------------#
 
 def main(num_partidas):
     '''
@@ -511,10 +467,11 @@ def main(num_partidas):
     tiempo_inicial = time.time()
     resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
     tiempo_partida = time.time() - tiempo_inicial
+    print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
     num_partidas += 1
     ganador(resultados, num_partidas)
-    print(f"El tiempo de la partida fue de {round(tiempo_partida)} segundos.")
     #escritura_fecha_hora()
 
-num_partidas = 0        
+CANTIDAD_FICHAS, MAXIMO_JUGADORES, MAXIMO_PARTIDAS, REINICIAR_ARCHIV0_PARTIDAS = leer_config()
+num_partidas = 0 #para copntrolar cuantas partidas se jugaron       
 main(num_partidas)
