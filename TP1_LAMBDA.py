@@ -25,7 +25,7 @@ def leer_config():
     ar_config = open('configuracion.csv', 'r')
     linea = leerArchivo(ar_config, ',')
 
-    cantidad_fichas = [int(linea[1]), 'configuracion'] if linea[1] else [8, 'defecto']
+    cantidad_fichas = [int(linea[1]), 'configuracion'] if linea[1] and linea[1] % 2 == 0 and linea[1] < 53 else [8, 'defecto']
     linea = leerArchivo(ar_config, ',')
 
     max_jugadores = [int(linea[1]), 'configuracion'] if linea[1] else [3, 'defecto']
@@ -34,7 +34,7 @@ def leer_config():
     max_partidas = [int(linea[1]), 'configuracion'] if linea[1] else [2, 'defecto']
     linea = leerArchivo(ar_config, ',')
 
-    reiniciar_ar = [linea[1], 'configuracion'] if linea[1] else [False, 'defecto']
+    reiniciar_ar = [linea[1], 'configuracion'] if linea[1] else ['False', 'defecto']
     ar_config.close()
 
     return cantidad_fichas, max_jugadores, max_partidas, reiniciar_ar
@@ -471,6 +471,9 @@ def main(num_partidas):
     tiempo_inicial = time.time() #Inicializo el tiempo para arrancar a contar
     resultados = voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, (diccionario,lista_nombres_usuarios))
     tiempo_partida = time.time() - tiempo_inicial
+    print(f'El tiempo de la partida es de {int(tiempo_partida)} segundos')
+    time.sleep(1.5)
+    os.system("cls")
     ganador(resultados, num_partidas) #Se calcula y muestra el ganador del juego en una interfaz.
     #escritura_fecha_hora()
 

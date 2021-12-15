@@ -26,7 +26,7 @@ def escritura_nombre_puntos_intentos(resultados):
         intentos=str(resultados[j][TUPLA_DATOS][INTENTOS])
         
         partidas.write(f"{fecha_de_partida},{hora_de_finalizacion},{nombre},{puntos},{intentos}\n")
-        resumen.write(f'{fecha_de_partida},{hora_de_finalizacion},{nombre},{puntos},{intentos}\n')
+        resumen.write(f'{nombre},{puntos},{intentos}\n')
     resumen.close()
     partidas.close
 
@@ -43,9 +43,18 @@ def resumen_total():
     Creada por: Julieta Margenats
     ''' 
     ar_partidas = open('resumen_total.csv', 'r')
-    linea = leerArchivo(ar_partidas, ',,,,')
-    print(f'resumen total: \n')
-    while linea[0]:
-        print(f'Fecha: {linea[0]} \nHora de inicio: {linea[1]} \nNombre de el/la participante: {linea[2]} \nAciertos: {linea[3]} \nIntentos: {linea[4]} \n-------------')
-        linea = leerArchivo(ar_partidas,',,,,')
+    nombre, puntos, intentos = leerArchivo(ar_partidas, ',,')
+    dic = {}
+    while nombre:
+        if nombre not in dic:
+            dic[nombre] = [int(puntos), int(intentos)]
+        else: 
+            dic[nombre][0] += int(puntos)
+            dic[nombre][1] += int(intentos)
+        nombre, puntos, intentos = leerArchivo(ar_partidas, ',,')
+    
+    print(f'\nresumen total: \n')
+    for clave in dic:
+        print(f'Nombre: {clave} \nAciertos: {dic[clave][0]} \nIntentos: {dic[clave][1]}\n-------------')
     ar_partidas.close()
+    
