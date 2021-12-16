@@ -2,6 +2,7 @@ from  hoja_manipulacion_archivos import *
 from hoja_validaciones import * 
 import random
 from tkinter import *
+import tkinter.font as tkFont
 import time
 import os
 
@@ -265,39 +266,64 @@ def interfaz_ganador(resultados,num_partidas):
     CREADA POR : YENNYFER GARCIA
     COLABORADOR: MILTON FERNANDEZ
     """
-    raiz = Tk()
-    raiz.title("Ranking")
-    raiz.config(bg="#D5D8DC")
-    raiz.geometry('700x250')
-    mi_frame=Frame(raiz)
-    mi_frame.pack()
-    mi_frame.config(bg="#D5D8DC")
-    filas = len(resultados)
-
     NOMBRE=PUNTOS=0
     TUPLA_DATOS=INTENTOS=1
 
+    raiz = Tk()
+    raiz.title("Ranking")
+    raiz.config(bg="#EAECEE")
+    raiz.geometry('700x280')
+    mi_frame=Frame(raiz)
+    mi_frame.pack()
+    mi_frame.config(bg="#EAECEE")
+    filas = len(resultados)
+
+    tk_font= tkFont.Font(family="Arial", size=16, weight="bold")
+    titulo_ranking=Label(mi_frame, text="RANKING",fg="#CA1C1C",font=tk_font,bg="#EAECEE")
+    titulo_ranking.grid(row=0, columnspan=4,padx=10, pady=10)
+
+    color_encabezado="black"
+
+    encabezados_font= tkFont.Font(family="Arial", size=10, weight="bold")
+    encabezado_nombre=Label(mi_frame, text=f"Nombre de Jugador",bg="#EAECEE",font=encabezados_font,fg=color_encabezado)
+    encabezado_nombre.grid(row=1, column=0, padx = 10, pady =10)
+
+    encabezado_aciertos=Label(mi_frame, text=f"Cantidad de aciertos",bg="#EAECEE",font=encabezados_font,fg=color_encabezado)
+    encabezado_aciertos.grid(row=1, column=1, padx = 10, pady =10)
+
+    encabezado_intentos=Label(mi_frame, text=f"Cantidad de intentos",bg="#EAECEE",font=encabezados_font,fg=color_encabezado)
+    encabezado_intentos.grid(row=1, column=2, padx = 10, pady =10)
+
+    encabezado_promedio=Label(mi_frame, text=f"Promedio de intentos",bg="#EAECEE",font=encabezados_font,fg=color_encabezado)
+    encabezado_promedio.grid(row=1, column=3, padx = 10, pady =10)
+    
+
     for j in range (filas):
         
-        fondo="#EABE3F" if j == 0 else "#D5D8DC"
+        fond_ganador= "#B7950B" if j==0 else "black"
+        tamaño=11 if j==0 else 9
+        
+        indice=j+1
+        columna=j+2
 
-        nombre_usuario=Label(mi_frame, text=f"Nombre de Jugador: {resultados[j][NOMBRE]}",bg=fondo)
-        nombre_usuario.grid(row=j, column=0, padx = 10, pady =10)
-            
-        puntos=Label(mi_frame, text=f"Cantidad de aciertos: {resultados[j][TUPLA_DATOS][PUNTOS]}",bg=fondo)
-        puntos.grid(row=j, column=1, padx = 10, pady =10)
+        tk_font= tkFont.Font(family="Arial", size=tamaño, weight="bold")
+        nombre_usuario=Label(mi_frame, text=f"{indice}.      {resultados[j][NOMBRE]} ",bg="#EAECEE",font=tk_font,fg=fond_ganador)
+        nombre_usuario.grid(row=columna, column=0, padx = 10, pady =10)
 
-        intentos=Label(mi_frame, text=f"Cantidad de intentos: {resultados[j][TUPLA_DATOS][INTENTOS]}",bg=fondo)
-        intentos.grid(row=j, column=2, padx = 10, pady =10)
+        puntos=Label(mi_frame, text=f"{resultados[j][NOMBRE]}",bg="#EAECEE",font=tk_font,fg=fond_ganador)
+        puntos.grid(row=columna, column=1, padx = 10, pady =10)
 
-        promedio_intentos=Label(mi_frame, text=f"Cantidad promedio de intentos: {resultados[j][TUPLA_DATOS][INTENTOS]/filas}",bg=fondo)
-        promedio_intentos.grid(row=j, column=3, padx = 10, pady =10)
+        intentos=Label(mi_frame, text=f"{resultados[j][TUPLA_DATOS][INTENTOS]}",bg="#EAECEE", font=tk_font,fg=fond_ganador)
+        intentos.grid(row=columna, column=2, padx = 10, pady =10)
+
+        promedio_intentos=Label(mi_frame, text=f"{resultados[j][TUPLA_DATOS][INTENTOS]/filas}",bg="#EAECEE",font=tk_font,fg=fond_ganador)
+        promedio_intentos.grid(row=columna, column=3, padx = 10, pady =10)
     
     boton_continuar=Button(mi_frame,text="Volver a jugar",command= lambda: reiniciar(num_partidas,raiz), bg="#24CA1C", fg="white",width="15", border=3)
-    boton_continuar.grid(row=filas + 1,column=1,padx = 10, pady =10)
+    boton_continuar.grid(row=filas + 2,column=1,padx = 10, pady =10)
     
     boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: raiz.destroy(), bg="#24CA1C", fg="white",width="15", border=3)
-    boton_abandonar.grid(row=filas + 1,column=2,padx = 10, pady =10)
+    boton_abandonar.grid(row=filas + 2,column=2,padx = 10, pady =10)
 
     validar_maximo_partidas(MAXIMO_PARTIDAS[0], num_partidas, mi_frame, raiz,filas) #Interfaz de control de partidas máximas.
     raiz.mainloop()
@@ -381,7 +407,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
 
 def crear_listas_juego():
     '''
-    Crea una lista de fechas de forma dinamica
+    Crea una lista de fechas
     CREADA POR: MILTON FERNANDEZ
     '''
 

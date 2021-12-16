@@ -100,9 +100,9 @@ def validar_maximo_partidas(maximo_partidas ,partidas, mi_frame, raiz,filas):
     '''
     if maximo_partidas > partidas:
         partidas= Label(mi_frame, text= 'Puede seguir \n jugando', fg="red")
-        partidas.grid(row=filas+2, column=0, columnspan=4, padx = 10, pady =10)
+        partidas.grid(row=filas+3, column=0, columnspan=4, padx = 10, pady =10)
 
     else:#si es igual a maximo de partidas 
         maximos= Label(mi_frame, text="MAXIMO DE PARTIDAS ALCANZADO. \n El juego se cerrará",fg="red")
-        maximos.grid(row=filas+2, column=0,columnspan=4, padx = 10, pady =10)
+        maximos.grid(row=filas+3, column=0,columnspan=4, padx = 10, pady =10)
         maximos.after(4000, lambda: raiz.destroy())
