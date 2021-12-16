@@ -197,7 +197,7 @@ def interfaz_nombres_jugadores():
         se registre primero.
         Creada por: Julieta Margenats, Juan Pedro Demarco.
         '''
-        usuario_existe = validar_registracion(username, password)
+        usuario_existe = validar_registracion(username, password) #se_encuentra,not_contraseña_correcta
 
         if usuario_existe[0]:#usuario y contraseña existen
             lista.append(username) #Los usuarios que se encuentran registrados se van sumando a la lista de jugadores.
@@ -310,7 +310,7 @@ def interfaz_ganador(resultados,num_partidas):
         nombre_usuario=Label(mi_frame, text=f"{indice}.      {resultados[j][NOMBRE]} ",bg="#EAECEE",font=tk_font,fg=fond_ganador)
         nombre_usuario.grid(row=columna, column=0, padx = 10, pady =10)
 
-        puntos=Label(mi_frame, text=f"{resultados[j][NOMBRE]}",bg="#EAECEE",font=tk_font,fg=fond_ganador)
+        puntos=Label(mi_frame, text=f"{resultados[j][TUPLA_DATOS][PUNTOS]}",bg="#EAECEE",font=tk_font,fg=fond_ganador)
         puntos.grid(row=columna, column=1, padx = 10, pady =10)
 
         intentos=Label(mi_frame, text=f"{resultados[j][TUPLA_DATOS][INTENTOS]}",bg="#EAECEE", font=tk_font,fg=fond_ganador)
@@ -325,7 +325,7 @@ def interfaz_ganador(resultados,num_partidas):
     boton_abandonar=Button(mi_frame,text="Terminar",command= lambda: raiz.destroy(), bg="#24CA1C", fg="white",width="15", border=3)
     boton_abandonar.grid(row=filas + 2,column=2,padx = 10, pady =10)
 
-    validar_maximo_partidas(MAXIMO_PARTIDAS[0], num_partidas, mi_frame, raiz,filas) #Interfaz de control de partidas máximas.
+    validar_maximo_partidas(MAXIMO_PARTIDAS[0], num_partidas, mi_frame, raiz,filas,boton_continuar) #Interfaz de control de partidas máximas.
     raiz.mainloop()
 
 #-------------------- JUEGO --------------------
@@ -356,7 +356,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
     CANT_PUNTOS=0
     CANT_INTENTOS=1 
 
-    #lista_cartas= mezclar(lista_cartas)
+    lista_cartas= mezclar(lista_cartas)
 
     diccionario = datos_jugadores[0] #divido mi tupla en diccionario y nombre de usuarios.
     lista_participantes = datos_jugadores[1]
@@ -400,7 +400,7 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
             lista_cartas[primera_posicion-1] = '[*]'
             lista_cartas[segunda_posicion-1] = '[*]'
             
-        #time.sleep(2.5)
+        time.sleep(2.5)
         os.system("cls")
         contador_jugadas_totales += 1
     return diccionario 

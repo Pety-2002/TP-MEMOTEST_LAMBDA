@@ -92,7 +92,7 @@ def validar_maximo_jugadores(max_jugadores, jugadores):
         devolver = False 
     return devolver
 
-def validar_maximo_partidas(maximo_partidas ,partidas, mi_frame, raiz,filas):
+def validar_maximo_partidas(maximo_partidas ,partidas, mi_frame, raiz,filas,boton_continuar):
     '''
     Verifica que no se sobrepase el limite de partidas
     CREADA POR: EVANGELINA ZURITA
@@ -103,6 +103,7 @@ def validar_maximo_partidas(maximo_partidas ,partidas, mi_frame, raiz,filas):
         partidas.grid(row=filas+3, column=0, columnspan=4, padx = 10, pady =10)
 
     else:#si es igual a maximo de partidas 
-        maximos= Label(mi_frame, text="MAXIMO DE PARTIDAS ALCANZADO. \n El juego se cerrará",fg="red")
+        maximos= Label(mi_frame, text="MAXIMO DE PARTIDAS ALCANZADO. \n El juego se cerrará automaticamente en 15 segundos",fg="red")
         maximos.grid(row=filas+3, column=0,columnspan=4, padx = 10, pady =10)
-        maximos.after(4000, lambda: raiz.destroy())
+        boton_continuar["state"] = DISABLED
+        maximos.after(15000, lambda: raiz.destroy())
