@@ -1,5 +1,5 @@
+from  hoja_manipulacion_archivos import *
 from hoja_validaciones import * 
-from hoja_datos_partidos import *
 import random
 from tkinter import *
 import time
@@ -15,45 +15,12 @@ def mezclar(lista):
     random.shuffle(lista_mezclada)
     return lista_mezclada
 
-#----------------- ARCHIVOS----------------------
-def leer_config():
-    '''
-    Lee el archivo de configuracion solo 1 vez al iniciar el programa
-    Creada por: Julieta Margenats
-    Si no tienen los valores prestablecidos, se tienen que configurar lo valores "por defecto" usqra ternario
-    '''
-    ar_config = open('configuracion.csv', 'r')
-    linea = leerArchivo(ar_config, ',')
-
-    cantidad_fichas = [int(linea[1]), 'configuracion'] if linea[1] and (int(linea[1]) % 2 == 0) and (int(linea[1]) < 53) else [8, 'defecto']
-    linea = leerArchivo(ar_config, ',')
-
-    max_jugadores = [int(linea[1]), 'configuracion'] if linea[1] else [3, 'defecto']
-    linea = leerArchivo(ar_config, ',')
-
-    max_partidas = [int(linea[1]), 'configuracion'] if linea[1] else [2, 'defecto']
-    linea = leerArchivo(ar_config, ',')
-
-    reiniciar_ar = [linea[1], 'configuracion'] if linea[1] else ['False', 'defecto']
-    ar_config.close()
-
-    return cantidad_fichas, max_jugadores, max_partidas, reiniciar_ar
-
-def agregar_linea(linea):
-    """
-    Agrega el nombre y contraseña del usuario al archivo
-    Creada Por: Yennyfer Garcia
-    """
-    archivo = open ("registro_usuarios.csv","a")
-    archivo.write(linea + "\n")
-    archivo.close()
-
 #------------------  EJECUCIONES DE INTERFACES------------------
 
 def guardar_usuarios(nombre, contraseña, contraseña_repetida,mensaje):
     """
-    Agrega a los usuarios al archivo
-    Creada Por: Yennyfer Garcia
+    Agrega a los usuarios al archivo de usuarios, si el ingreso es incorrecto se le avisa al usuario su error
+    CREADA POR: YENNYFER GARCIA
     """
     nombre_valido=validar_nombre_usuario(nombre)
     contraseña_valida=validar_contraseña_usuario(contraseña)
@@ -79,26 +46,26 @@ def guardar_usuarios(nombre, contraseña, contraseña_repetida,mensaje):
         mensaje.set("Las contraseñas son distintas")
 
 def inicio(window):
+    """
+    Destruye la ventana
+    CREADA POR: YENNYFER GARCIA
+    """
     window.destroy()
-    #nombres_jugadores()
-
-def interfaz_registro(raiz):
-    '''
-    Cierra la interfaz inicial y abre la interfaz de registro.
-    Creada por: .
-    '''
-    registro()
 
 def reiniciar(num_partidas,raiz):
+    """
+    Destruye la raiz y ejecuta de vuelta el programa
+    CREADA POR: YENNYFER GARCIA
+    """
     raiz.destroy()
     main(num_partidas)
 
 #-------------------------- INTERFACES------------------------
 
-def registro():
+def interfaz_registro():
     """
     Crea la interfaz de registro de los usuarios
-    Creada Por: Yennyfer Garcia
+    CREADA POR: YENNYFER GARCIA
     """
 
     window = Toplevel()
@@ -148,12 +115,11 @@ def registro():
 
     window.mainloop()
 
-def nombres_jugadores():
+def interfaz_nombres_jugadores():
     """
-    CREA LA INTERFAZ INICIAL para solicitar el nombre de los jugadores.
-    Creada por: Milton Fernandez, Yennyfer Garcia, Juan Pedro Demarco.
+    Crea la interfaz incial para solicitar el nombre de los jugadores.
+    CREADA POR: JUAN DEMARCO/FACUNDO POLECH
     """
-    buttonClicked  = False # Antes de apretar el boton jugar.
     raiz = Tk()
     lista = [] #guarda los nombres de los jugadores.
     raiz.title("Ingreso Usuarios")
@@ -282,7 +248,7 @@ def nombres_jugadores():
     boton_agregar_jugador=Button(mi_frame,text="Agregar jugador",command = lambda: agregar_jugador([jugadores,cuadro_nombre.get(),cuadro_contraseña.get(),raiz,mensaje_derecha],users_label, contra_label,cuadro_nombre,cuadro_contraseña,boton_enviar),bg="#2DBCF1", fg="white",width="15", border=3)
     boton_agregar_jugador.grid(row=3,column=1,padx = 10, pady =10)
 
-    boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro(raiz),bg="#2DBCF1", fg="white",width="15", border=3)
+    boton_registro=Button(mi_frame,text="Registrarse",command = lambda: interfaz_registro() ,bg="#2DBCF1", fg="white",width="15", border=3)
     boton_registro.grid(row=3,column=2,padx = 10, pady =10)
 
     boton_enviar=Button(mi_frame,text="Jugar!", command = lambda: turnos(lista,lista_jugadores,jugadores) ,bg="#24CA1C", fg="white",width="15", border=3)
@@ -294,6 +260,11 @@ def nombres_jugadores():
     return lista
 
 def interfaz_ganador(resultados,num_partidas):
+    """
+    Crea la interfaz en la que se muetra el ganador y los resultados de el resto de los jugadores
+    CREADA POR : YENNYFER GARCIA
+    COLABORADOR: MILTON FERNANDEZ
+    """
     raiz = Tk()
     raiz.title("Ranking")
     raiz.config(bg="#D5D8DC")
@@ -349,28 +320,6 @@ def datos_jugadores(lista_nombres_ingresados):
     for jugador in lista_nombres_ingresados:
         diccionario[jugador] = [0,0] #[cantidad de puntos, cantidad de intentos]
     return  diccionario 
-
-def crear_listas_juego():
-    '''
-    Creada por: Milton Fernández
-    '''
-
-    lista_juego = []
-    lista_cartas = []
-    LISTA_VACIA = []
-    cantidad_de_letras = CANTIDAD_FICHAS[0]//2
-    abecedario = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    abecedario_cortado = abecedario[0:cantidad_de_letras]
-
-    for i in range (CANTIDAD_FICHAS[0]):
-        lista_juego.append([i+1])
-        LISTA_VACIA.append([i+1])
-    
-    for j in abecedario_cortado:
-        lista_cartas.append([j])
-        lista_cartas.append([j])
-    
-    return lista_juego, lista_cartas, LISTA_VACIA
 
 def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #datos_jugadores es una tupla!
     '''
@@ -430,17 +379,37 @@ def voltear_cartas(lista_juego, lista_cartas, LISTA_VACIA, datos_jugadores): #da
         contador_jugadas_totales += 1
     return diccionario 
 
+def crear_listas_juego():
+    '''
+    Crea una lista de fechas de forma dinamica
+    CREADA POR: MILTON FERNANDEZ
+    '''
+
+    lista_juego = []
+    lista_cartas = []
+    LISTA_VACIA = []
+    cantidad_de_letras = CANTIDAD_FICHAS[0]//2
+    abecedario = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    abecedario_cortado = abecedario[0:cantidad_de_letras]
+
+    for i in range (CANTIDAD_FICHAS[0]):
+        lista_juego.append([i+1])
+        LISTA_VACIA.append([i+1])
+    
+    for j in abecedario_cortado:
+        lista_cartas.append([j])
+        lista_cartas.append([j])
+    
+    return lista_juego, lista_cartas, LISTA_VACIA
+
 def ganador(resultados, num_partidas):
     '''
     En calcula quien fue el ganador en base a los puntos obtenidos o ,en caso de empate, por la menor cantidad de intentos realizados.
-    Creada por: Juan Pedro, Facundo Polech
-    Interfaz y archivo partidas: Milton Fernández
+    CREADA POR: JUAN DEMARCO
     '''
     PUNTOS=0
     TUPLA_DATOS=INTENTOS=1
-
     resultados = [(participante,puntos) for participante , puntos in resultados.items()] #lista de tuplas a partir de diccionario.
-
     resultados.sort(key = lambda elemento: elemento[TUPLA_DATOS][PUNTOS] ,reverse = True)
     numero_max = resultados[0][TUPLA_DATOS][PUNTOS]
     contador = 0
@@ -454,9 +423,8 @@ def ganador(resultados, num_partidas):
     
     interfaz_ganador(resultados,num_partidas)
     #--------------------------------------- Partidas.csv ---------------------------------------------#
-
     reiniciar_archivo_partidas(REINICIAR_ARCHIV0_PARTIDAS[0]) #En caso de que el archivo de configuración lo requiera se reiniciará el archivo partidas
-    escritura_nombre_puntos_intentos(resultados) #Escribe los datos en Partidas.csv
+    escritura_archivo_partidas(resultados) #Escribe los datos en Partidas.csv
 
 #------------------------------------- COMIENZO DEL JUEGO -------------------------------------------#
 
@@ -465,7 +433,7 @@ def main(num_partidas):
     Creada por: Julieta Margenats
     '''
     num_partidas += 1 #Se incrementa el numero de partidas
-    lista_nombres_usuarios = nombres_jugadores() #Llamo a la interfaz de inicio, me devuelve la lista desordenada con los jugadores.
+    lista_nombres_usuarios = interfaz_nombres_jugadores() #Llamo a la interfaz de inicio, me devuelve la lista desordenada con los jugadores.
     diccionario = datos_jugadores(lista_nombres_usuarios) #Creo diccionario para cada uno de los jugadores.
     lista_juego, lista_cartas, LISTA_VACIA = crear_listas_juego()
     tiempo_inicial = time.time() #Inicializo el tiempo para arrancar a contar
@@ -475,7 +443,6 @@ def main(num_partidas):
     time.sleep(1.5)
     os.system("cls")
     ganador(resultados, num_partidas) #Se calcula y muestra el ganador del juego en una interfaz.
-    #escritura_fecha_hora()
 
 CANTIDAD_FICHAS, MAXIMO_JUGADORES, MAXIMO_PARTIDAS, REINICIAR_ARCHIV0_PARTIDAS = leer_config()
 num_partidas = 0 #para controlar cuantas partidas se jugaron

@@ -1,21 +1,12 @@
 
 from tkinter import *
-
-#------------------- Validaciones --------------------#
-
-#sacar esta funcion de aqui
-def leerArchivo(archivo, default):
-    """
-    Devuelve las lineas del archivo
-    Creada Por: Yennyfer Garcia
-    """
-    linea = archivo.readline()
-    return linea.rstrip().split(',') if linea else default.split(',')
+from hoja_manipulacion_archivos import leer_linea_archivo
 
 def validar_ingreso(numero,lista_cartas,lista_juego):
     '''
     Validar que el ingreso no sea una valor fuera de rango/no se encuentre disponible/no sea un numero/no sea una ficha ya tomada.
-    Creada por: Facundo Polech
+    CREADA POR: EVANGELINA ZURITA
+    COLABORTADOR: FACUNDO POLECH
     '''
     while not numero.isdigit() or int(numero)<=0 or int(numero)>len(lista_cartas) or lista_juego[int(numero)-1] == '[*]' or lista_juego[int(numero)-1] in lista_cartas:
         numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada EXISTENTE en el tablero: ")
@@ -24,12 +15,13 @@ def validar_ingreso(numero,lista_cartas,lista_juego):
 def validar_registracion(nombre,contraseña):
     """
     Valida si el usuario se encuentra en el archivo
-    Creada Por: Yennyfer Garcia
+    CREADA POR: EVANGELINA ZURITA
+    COLABORADOR: YENNYFER GARCIA
     """
     archivo = open('registro_usuarios.csv',"r")
 
     end="99999"
-    linea_1=leerArchivo(archivo,end)
+    linea_1=leer_linea_archivo(archivo,end)
     se_encuentra=False
     not_contraseña_correcta = False
     while linea_1[0]!=end and se_encuentra==False:
@@ -37,7 +29,7 @@ def validar_registracion(nombre,contraseña):
             se_encuentra=True
         elif linea_1[0] == nombre and linea_1[1] !=contraseña:
             not_contraseña_correcta = True
-        linea_1 =leerArchivo(archivo,end)
+        linea_1 =leer_linea_archivo(archivo,end)
 
     archivo.close()
     return se_encuentra,not_contraseña_correcta
@@ -45,7 +37,7 @@ def validar_registracion(nombre,contraseña):
 def validar_nombre_usuario(nombre_usuario):
     """
     Valida que el nombre del usuario cumpla con las caracteristicas requeridas
-    Creada por: Yennyfer Garcia
+    CREADA POR: EVANGELINA ZURITA
     """
     valida=False
     guion_bajo=nombre_usuario.find("_")
@@ -54,6 +46,10 @@ def validar_nombre_usuario(nombre_usuario):
     return valida
 
 def validar_contraseña_usuario(contraseña):
+    """
+    Valida si el usuario ingresó una contraseña que cumple con las condiciones dadas
+    CREADA POR: EVANGELINA ZURITA
+    """
     valida=False
     alfanumerico= contraseña.isalpha()==False and contraseña.isnumeric()==False
     i=j=k=l=0
@@ -85,21 +81,22 @@ def validar_contraseña_usuario(contraseña):
     
     return valida
 
-def validar_maximo_jugadores(max_jugadores, jugadores): #necesita el archivo de configuracion y la longitud de la lista de jugadores para comparar
+def validar_maximo_jugadores(max_jugadores, jugadores):
     """
     verifica que no se sobrepase el limite de jugadores
-    Creada Por: Julieta Margenats
+    CREADA POR: JULIETA MARGENATS
     """
     if max_jugadores> jugadores:
-        devolver = True #Se pueden seguir ingresando jugadores
+        devolver = True 
     else:
-        devolver = False #No se pueden seguir ingresando jugadores
+        devolver = False 
     return devolver
 
 def validar_maximo_partidas(maximo_partidas ,partidas, mi_frame, raiz,filas):
     '''
     Verifica que no se sobrepase el limite de partidas
-    Creada por: Milton Fernández
+    CREADA POR: EVANGELINA ZURITA
+    COLABORADOR: MILTON FERNANDEZ
     '''
     if maximo_partidas > partidas:
         partidas= Label(mi_frame, text= 'Puede seguir \n jugando', fg="red")
