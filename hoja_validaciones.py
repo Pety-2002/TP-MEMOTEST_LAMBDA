@@ -5,8 +5,7 @@ from hoja_manipulacion_archivos import leer_linea_archivo
 def validar_ingreso(numero,lista_cartas,lista_juego):
     '''
     Validar que el ingreso no sea una valor fuera de rango/no se encuentre disponible/no sea un numero/no sea una ficha ya tomada.
-    CREADA POR: EVANGELINA ZURITA
-    COLABORTADOR: FACUNDO POLECH
+    CREADA POR: FACUNDO POLECH
     '''
     while not numero.isdigit() or int(numero)<=0 or int(numero)>len(lista_cartas) or lista_juego[int(numero)-1] == '[*]' or lista_juego[int(numero)-1] in lista_cartas:
         numero = input("ERROR 401 :) /Escribir un NUMERO correspondiente a la posicion de la ficha deseada EXISTENTE en el tablero: ")
@@ -59,7 +58,7 @@ def validar_contraseña_usuario(contraseña):
         minuscula=False
         guiones=False
         caracteres_invalidos='áéíóúÁÉÍÓÚ'
-        #----------OPTIMIZAR-----------------
+       
         while guiones==False and i<len(contraseña):
             if contraseña[i] == "-" or contraseña[i] == "_": guiones=True
             i+=1
@@ -75,7 +74,7 @@ def validar_contraseña_usuario(contraseña):
         while minuscula==False and l<len(contraseña):
             if contraseña[l].islower(): minuscula=True
             l+=1
-        #--------------------------------------
+        
         if guiones and invalido==False and mayuscula and minuscula:
             valida=True
     
