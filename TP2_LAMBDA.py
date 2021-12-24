@@ -46,13 +46,6 @@ def guardar_usuarios(nombre, contraseña, contraseña_repetida,mensaje):
     elif contraseña != contraseña_repetida:
         mensaje.set("Las contraseñas son distintas")
 
-def inicio(window):
-    """
-    Destruye la ventana
-    CREADA POR: YENNYFER GARCIA
-    """
-    window.destroy()
-
 def reiniciar(num_partidas,raiz):
     """
     Destruye la raiz y ejecuta de vuelta el programa
